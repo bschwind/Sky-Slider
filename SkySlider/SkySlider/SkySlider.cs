@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using GraphicsToolkit;
+using GraphicsToolkit.Input;
+using GraphicsToolkit.GUI;
+using SkySlider.Panels;
 
 namespace SkySlider
 {
@@ -15,11 +19,21 @@ namespace SkySlider
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        GUIManager gManager;
 
         public SkySlider()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            Config.ScreenWidth = 1280;
+            Config.ScreenHeight = 720;
+
+            Components.Add(new InputHandler(this));
+
+            gManager = new GUIManager(this, graphics);
+            gManager.AddPanel(new MapViewerPanel());
+            Components.Add(gManager);
         }
 
         protected override void Initialize()
@@ -39,8 +53,10 @@ namespace SkySlider
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            if (InputHandler.IsNewKeyPress(Keys.Escape))
+            {
+                Exit();
+            }
 
             base.Update(gameTime);
         }

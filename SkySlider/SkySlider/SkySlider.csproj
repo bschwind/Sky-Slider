@@ -60,6 +60,9 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GraphicsToolkit">
+      <HintPath>..\..\..\GraphicsToolkit\GraphicsToolkit\bin\x86\Debug\GraphicsToolkit.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -107,9 +110,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Maps\Block.cs" />
+    <Compile Include="Maps\BlockData.cs" />
+    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Panels\MapViewerPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="SkySlider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
