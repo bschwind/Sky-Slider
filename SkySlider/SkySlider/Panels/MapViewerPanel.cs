@@ -35,9 +35,7 @@ namespace SkySlider.Panels
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
             //Fix up this case
-            mb.AddQuad(Vector3.Zero, new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0), false);
-            mb.AddQuad(new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 1, -0.2f), new Vector3(2, 0, -0.2f), false);
-            mb.AddQuad(new Vector3(2, 0, -0.2f), new Vector3(2, 1, -0.2f), new Vector3(3, 1, 0), new Vector3(3, 0, 0), false);
+            mb.AddCylinder(0.3f, 3, 100);
             testMesh = mb.End();
         }
 
