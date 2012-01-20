@@ -24,6 +24,7 @@ namespace SkySlider
         public SkySlider()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.SynchronizeWithVerticalRetrace = true;
             Content.RootDirectory = "Content";
 
             Config.ScreenWidth = 1280;
