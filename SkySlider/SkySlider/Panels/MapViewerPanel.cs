@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.GUI;
 using GraphicsToolkit.Graphics;
 using GraphicsToolkit.Input;
+using GraphicsToolkit.Graphics.SceneGraph;
 using SkySlider.Maps;
 
 namespace SkySlider.Panels
@@ -15,16 +16,16 @@ namespace SkySlider.Panels
     {
         Map map;
         FirstPersonCamera cam;
-        Camera2D c2;
         PrimitiveBatch primBatch;
         Mesh testMesh;
+        MeshNode mNode;
+        float rotation = 0f;
 
         public MapViewerPanel(Vector2 upLeft, Vector2 botRight)
             : base(upLeft, botRight)
         {
             cam = new FirstPersonCamera(0.5f, 10f);
             cam.Pos = new Vector3(0, 3, 13);
-            c2 = new Camera2D(Vector2.Zero, this);
         }
 
         public override void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -38,22 +39,38 @@ namespace SkySlider.Panels
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
             //Fix up this case
-            mb.AddCylinder(0.3f, 3, 100);
+            mb.AddCylinder(1, 1, 50);
             testMesh = mb.End();
+
+            mNode = new MeshNode(testMesh);
+            mNode.SetPos(new Vector3(0, 0, 0));
+            mNode.SetScl(new Vector3(1, 1, 1));
+
+            MeshNode childNode = new MeshNode(testMesh);
+            childNode.SetPos(new Vector3(0, 2, 0));
+            childNode.SetScl(new Vector3(1));
+
+            MeshNode anotherNode = new MeshNode(testMesh);
+            anotherNode.SetPos(new Vector3(0, 2, 0));
+            anotherNode.SetScl(new Vector3(50, 1, 1));
+            childNode.AddChild(anotherNode);
+
+            mNode.AddChild(childNode);
         }
 
         protected override void OnRefresh()
         {
             base.OnRefresh();
             cam.Resize();
-            c2.Resize();
         }
 
         public override void Update(GameTime g)
         {
             base.Update(g);
             cam.Update(g);
-            //c2.Update(g);
+
+            rotation += 0.1f;
+            mNode.SetRotation(Quaternion.CreateFromAxisAngle(Vector3.Up, rotation));
         }
 
         public override void Draw(GameTime g)
@@ -64,10 +81,11 @@ namespace SkySlider.Panels
             primBatch.DrawXZGrid(10, 10, Color.Blue);
             primBatch.DrawXYGrid(10, 10, Color.Red);
             primBatch.DrawYZGrid(10, 10, Color.Green);
-            //primBatch.Draw2DGrid(10, 10, Color.Orange);
             primBatch.End();
 
-            map.DebugDraw(g, primBatch, cam);
+            mNode.Draw(g, Matrix.Identity, primBatch, cam);
+
+            //map.DebugDraw(g, primBatch, cam);
         }
     }
 }
