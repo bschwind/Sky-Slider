@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.GUI;
 using GraphicsToolkit.Graphics;
+using GraphicsToolkit.Input;
 using SkySlider.Maps;
 
 namespace SkySlider.Panels
@@ -14,13 +15,16 @@ namespace SkySlider.Panels
     {
         Map map;
         FirstPersonCamera cam;
+        Camera2D c2;
         PrimitiveBatch primBatch;
         Mesh testMesh;
 
-        public MapViewerPanel()
-            : base(Vector2.Zero, Vector2.One)
+        public MapViewerPanel(Vector2 upLeft, Vector2 botRight)
+            : base(upLeft, botRight)
         {
-            
+            cam = new FirstPersonCamera(0.5f, 10f);
+            cam.Pos = new Vector3(0, 3, 13);
+            c2 = new Camera2D(Vector2.Zero, this);
         }
 
         public override void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -28,8 +32,7 @@ namespace SkySlider.Panels
             base.LoadContent(content);
 
             map = new Map();
-            cam = new FirstPersonCamera(0.5f, 10f);
-            cam.Pos = new Vector3(0, 3, 13);
+            BlockData.BuildMeshes(Device, content);
             primBatch = new PrimitiveBatch(Device);
 
             MeshBuilder mb = new MeshBuilder(Device);
@@ -42,25 +45,29 @@ namespace SkySlider.Panels
         protected override void OnRefresh()
         {
             base.OnRefresh();
+            cam.Resize();
+            c2.Resize();
         }
 
         public override void Update(GameTime g)
         {
             base.Update(g);
-
             cam.Update(g);
+            //c2.Update(g);
         }
 
         public override void Draw(GameTime g)
         {
             base.Draw(g);
-            Panel.Device.Clear(Color.Black);
 
             primBatch.Begin(PrimitiveType.LineList, cam);
             primBatch.DrawXZGrid(10, 10, Color.Blue);
+            primBatch.DrawXYGrid(10, 10, Color.Red);
+            primBatch.DrawYZGrid(10, 10, Color.Green);
+            //primBatch.Draw2DGrid(10, 10, Color.Orange);
             primBatch.End();
 
-            primBatch.DrawMesh(testMesh, cam);
+            map.DebugDraw(g, primBatch, cam);
         }
     }
 }

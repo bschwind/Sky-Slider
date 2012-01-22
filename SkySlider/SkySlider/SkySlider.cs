@@ -25,6 +25,7 @@ namespace SkySlider
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.SynchronizeWithVerticalRetrace = true;
+            graphics.PreferMultiSampling = true;
             Content.RootDirectory = "Content";
 
             Config.ScreenWidth = 1280;
@@ -33,7 +34,7 @@ namespace SkySlider
             Components.Add(new InputHandler(this));
 
             gManager = new GUIManager(this, graphics);
-            gManager.AddPanel(new MapViewerPanel());
+            gManager.AddPanel(new MapViewerPanel(Vector2.Zero, Vector2.One));
             Components.Add(gManager);
         }
 
