@@ -38,24 +38,21 @@ namespace SkySlider.Panels
 
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
-            //Fix up this case
-            mb.AddCylinder(1, 1, 50);
+
+            //mb.AddCylinder(1, 1, 50);
+            mb.AddSphere(1, 20, 20);
             testMesh = mb.End();
 
             mNode = new MeshNode(testMesh);
-            mNode.SetPos(new Vector3(0, 0, 0));
-            mNode.SetScl(new Vector3(1, 1, 1));
+            mNode.SetPivot(new Vector3(0, -1f, 0));
+            mNode.SetScl(new Vector3(1, 5, 1));
+            MeshNode child = new MeshNode(testMesh);
+            child.SetPos(new Vector3(0, 2, 0));
+            MeshNode another = new MeshNode(testMesh);
+            another.SetPos(new Vector3(0, 2, 0));
 
-            MeshNode childNode = new MeshNode(testMesh);
-            childNode.SetPos(new Vector3(0, 2, 0));
-            childNode.SetScl(new Vector3(1));
-
-            MeshNode anotherNode = new MeshNode(testMesh);
-            anotherNode.SetPos(new Vector3(0, 2, 0));
-            anotherNode.SetScl(new Vector3(50, 1, 1));
-            childNode.AddChild(anotherNode);
-
-            mNode.AddChild(childNode);
+            //child.AddChild(another);
+            //mNode.AddChild(child);
         }
 
         protected override void OnRefresh()
@@ -70,7 +67,7 @@ namespace SkySlider.Panels
             cam.Update(g);
 
             rotation += 0.1f;
-            mNode.SetRotation(Quaternion.CreateFromAxisAngle(Vector3.Up, rotation));
+            mNode.SetRotation(Quaternion.CreateFromAxisAngle(Vector3.Right, rotation));
         }
 
         public override void Draw(GameTime g)
@@ -83,9 +80,9 @@ namespace SkySlider.Panels
             primBatch.DrawYZGrid(10, 10, Color.Green);
             primBatch.End();
 
-            mNode.Draw(g, Matrix.Identity, primBatch, cam);
+            //mNode.Draw(g, Matrix.Identity, primBatch, cam);
 
-            //map.DebugDraw(g, primBatch, cam);
+            map.DebugDraw(g, primBatch, cam);
         }
     }
 }

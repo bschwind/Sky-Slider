@@ -16,19 +16,22 @@ namespace SkySlider.Maps
         //2 = half box
         //3 = quarter box
         private static Mesh[] blockMeshes;
+        private static int sphereIterations = 6;
 
         public static void BuildMeshes(GraphicsDevice g, ContentManager content)
         {
-            blockMeshes = new Mesh[5];
-            blockMeshes[1] = BuildBoxMesh(g, content);
-            blockMeshes[2] = BuildHalfBoxMesh(g, content);
-            blockMeshes[3] = BuildQuarterBoxMesh(g, content);
-        }
-
-        private static Mesh BuildBoxMesh(GraphicsDevice g, ContentManager c)
-        {
             MeshBuilder mb = new MeshBuilder(g);
 
+            blockMeshes = new Mesh[20];
+            blockMeshes[1] = BuildBoxMesh(mb, content);
+            blockMeshes[2] = BuildHalfBoxMesh(mb, content);
+            blockMeshes[3] = BuildQuarterBoxMesh(mb, content);
+            blockMeshes[4] = BuildEighthBoxMesh(mb, content);
+            blockMeshes[5] = BuildConvexRamp(mb, content);
+        }
+
+        private static Mesh BuildBoxMesh(MeshBuilder mb, ContentManager c)
+        {
             float width = 1f;
             float height = 1f;
             float depth = 1f;
@@ -42,12 +45,9 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
             return mb.End();
         }
-        
-        //INCORRECT!
-        private static Mesh BuildHalfBoxMesh(GraphicsDevice g, ContentManager c)
-        {
-            MeshBuilder mb = new MeshBuilder(g);
 
+        private static Mesh BuildHalfBoxMesh(MeshBuilder mb, ContentManager c)
+        {
             float width = 1f;
             float height = 0.5f;
             float depth = 1f;
@@ -59,13 +59,12 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.OffsetAllVerts(new Vector3(0, -0.25f, 0)); //Offset the verts, because the above code centers the tile over the wrong position
             return mb.End();
         }
 
-        private static Mesh BuildQuarterBoxMesh(GraphicsDevice g, ContentManager c)
+        private static Mesh BuildQuarterBoxMesh(MeshBuilder mb, ContentManager c)
         {
-            MeshBuilder mb = new MeshBuilder(g);
-
             float width = 1f;
             float height = 0.5f;
             float depth = 0.5f;
@@ -77,6 +76,57 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.OffsetAllVerts(new Vector3(0, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
+            return mb.End();
+        }
+
+        private static Mesh BuildEighthBoxMesh(MeshBuilder mb, ContentManager c)
+        {
+            float width = 0.5f;
+            float height = 0.5f;
+            float depth = 0.5f;
+
+            mb.Begin();
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.OffsetAllVerts(new Vector3(-0.25f, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
+            return mb.End();
+        }
+
+        private static Mesh BuildConvexRamp(MeshBuilder mb, ContentManager c)
+        {
+            mb.Begin();
+            //mb.AddQuad(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
+            mb.AddQuad(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f), false);
+            mb.AddQuad(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
+
+            for (int i = 0; i < sphereIterations; i++)
+            {
+                //Draw the curved surface, and the two sides
+                float angle = ((float)i / sphereIterations) * MathHelper.PiOver2;
+                float nextAngle = ((float)(i + 1) / sphereIterations) * MathHelper.PiOver2;
+                Vector3 offset = new Vector3(-0.5f);
+
+                Vector3 v1 = new Vector3(0, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
+                Vector3 v2 = new Vector3(1, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
+                Vector3 v3 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
+                Vector3 v4 = new Vector3(0, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
+
+                mb.AddQuad(v1, v2, v3, v4, true);
+
+                //Draw the two sides
+                v1 = new Vector3(1, 0, 0) + offset;
+                v2 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
+                v3 = new Vector3(1, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
+
+                mb.AddTriangle(v1, v2, v3, false);
+                offset = new Vector3(-1, 0, 0);
+                mb.AddTriangle(v1+offset, v3+offset, v2+offset, false);
+            }
             return mb.End();
         }
 

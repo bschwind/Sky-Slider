@@ -10,15 +10,16 @@ namespace SkySlider.Maps
 {
     public class Map
     {
-        private int width = 10;
-        private int height = 10;
-        private int depth = 10;
+        private int width = 30;
+        private int height = 30;
+        private int depth = 30;
 
         private Block[, ,] blocks;
 
         public Map()
         {
             blocks = new Block[width, height, depth];
+            Random r = new Random();
 
             for (int x = 0; x < width; x++)
             {
@@ -28,7 +29,8 @@ namespace SkySlider.Maps
                     {
                         if (x == 0 || y == 0 || z == 0)
                         {
-                            blocks[x, y, z].Type = 2;
+                            blocks[x, y, z].Type = (byte)r.Next(0, 6);
+                            //blocks[x, y, z].Type = 5;
                         }
                     }
                 }
