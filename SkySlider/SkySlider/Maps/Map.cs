@@ -10,9 +10,9 @@ namespace SkySlider.Maps
 {
     public class Map
     {
-        private int width = 30;
-        private int height = 30;
-        private int depth = 30;
+        private int width = 10;
+        private int height = 10;
+        private int depth = 10;
 
         private Block[, ,] blocks;
 
@@ -27,11 +27,8 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        if (x == 0 || y == 0 || z == 0)
-                        {
                             blocks[x, y, z].Type = (byte)r.Next(0, 6);
                             //blocks[x, y, z].Type = 5;
-                        }
                     }
                 }
             }
