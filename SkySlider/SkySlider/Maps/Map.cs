@@ -29,6 +29,7 @@ namespace SkySlider.Maps
                     {
                             blocks[x, y, z].Type = (byte)r.Next(0, 6);
                             //blocks[x, y, z].Type = 5;
+                        
                     }
                 }
             }
