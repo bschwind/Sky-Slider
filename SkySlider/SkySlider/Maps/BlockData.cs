@@ -15,6 +15,9 @@ namespace SkySlider.Maps
         //1 = box
         //2 = half box
         //3 = quarter box
+        //4 = eighth box
+        //5 = convex ramp
+
         private static Mesh[] blockMeshes;
         private static int sphereIterations = 6;
 
