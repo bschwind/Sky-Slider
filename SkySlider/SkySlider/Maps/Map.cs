@@ -27,8 +27,8 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                            blocks[x, y, z].Type = (byte)r.Next(0, 6);
-                            //blocks[x, y, z].Type = 5;
+                            //blocks[x, y, z].Type = (byte)r.Next(0, 6);
+                        blocks[x, y, z].Type = 8;
                         
                     }
                 }
