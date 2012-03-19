@@ -50,11 +50,17 @@ namespace SkySlider.Maps
             float depth = 1f;
 
             mb.Begin();
+            //front
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            //left
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            //back
             mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            //right
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            //top
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            //bottom
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
             return mb.End();
         }
@@ -66,11 +72,17 @@ namespace SkySlider.Maps
             float depth = 1f;
 
             mb.Begin();
+            //front
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            //left
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            //back
             mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            //right
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            //top
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            //bottom
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
             mb.OffsetAllVerts(new Vector3(0, -0.25f, 0)); //Offset the verts, because the above code centers the tile over the wrong position
             return mb.End();
@@ -83,11 +95,17 @@ namespace SkySlider.Maps
             float depth = 0.5f;
 
             mb.Begin();
+            //front
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            //left
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            //back
             mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            //right
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            //top
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            //bottom
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
             mb.OffsetAllVerts(new Vector3(0, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
             return mb.End();
@@ -100,11 +118,17 @@ namespace SkySlider.Maps
             float depth = 0.5f;
 
             mb.Begin();
+            //front
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            //left
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            //back
             mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            //right
             mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            //top
             mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            //bottom
             mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
             mb.OffsetAllVerts(new Vector3(-0.25f, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
             return mb.End();
@@ -162,8 +186,6 @@ namespace SkySlider.Maps
             mb.AddTriangle( new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
             //right
             mb.AddQuad(new Vector3(-widthHalf, heightHalf, (depthHalf)), new Vector3(-widthHalf, heightHalf, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
-            //top
-            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(widthHalf, heightHalf, -(depthHalf)), new Vector3((widthHalf), heightHalf, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
             //bottom
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
             return mb.End();
@@ -188,8 +210,6 @@ namespace SkySlider.Maps
             mb.AddTriangle(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), false);
             //right
             mb.AddQuad(new Vector3(-widthHalf, heightHalf, (depthHalf)), new Vector3(-widthHalf, heightHalf, -(depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), new Vector3((0), -(heightHalf), (depthHalf)), false);
-            //top
-            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(0, heightHalf, -(depthHalf)), new Vector3((0), heightHalf, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
             //bottom
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(0, -(heightHalf), (depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
             return mb.End();
@@ -214,8 +234,6 @@ namespace SkySlider.Maps
             mb.AddTriangle(new Vector3(-widthHalf, (0), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
             //right
             mb.AddQuad(new Vector3(-widthHalf, 0, (depthHalf)), new Vector3(-widthHalf, 0, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
-            //top
-            mb.AddQuad(new Vector3(-widthHalf, (0), -(depthHalf)), new Vector3(widthHalf, -heightHalf, -(depthHalf)), new Vector3((widthHalf), -heightHalf, (depthHalf)), new Vector3(-(widthHalf), (0), (depthHalf)), false);
             //bottom
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
             return mb.End();
