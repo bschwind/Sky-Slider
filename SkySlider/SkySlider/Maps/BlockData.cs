@@ -20,6 +20,7 @@ namespace SkySlider.Maps
         //6 = slope1 ramp
         //7 = slope2 ramp
         //8 = slopehalf ramp
+        //9 = concave ramp
         //10 = slope2 base
         //11 = slopehalf base
 
@@ -39,6 +40,7 @@ namespace SkySlider.Maps
             blockMeshes[6] = BuildSlope1Ramp(mb, content);
             blockMeshes[7] = BuildSlope2Ramp(mb, content);
             blockMeshes[8] = BuildSlopeHalfRamp(mb, content);
+            blockMeshes[9] = BuildConcaveRamp(mb, content);
             blockMeshes[10] = BuildSlope2Base(mb, content);
             blockMeshes[11] = BuildSlopeHalfBase(mb, content);
         }
@@ -236,6 +238,39 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3(-widthHalf, 0, (depthHalf)), new Vector3(-widthHalf, 0, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
             //bottom
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
+        private static Mesh BuildConcaveRamp(MeshBuilder mb, ContentManager c)
+        {
+            mb.Begin();
+            //mb.AddQuad(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
+            mb.AddQuad(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f), false);
+            mb.AddQuad(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
+
+            for (int i = 0; i < sphereIterations; i++)
+            {
+                //Draw the curved surface, and the two sides
+                float angle = ((float)i / sphereIterations) * MathHelper.PiOver2 + MathHelper.Pi;
+                float nextAngle = ((float)(i + 1) / sphereIterations) * MathHelper.PiOver2 + MathHelper.Pi;
+                Vector3 offset = new Vector3(-0.5f, 0.5f, 0.5f);
+
+                Vector3 v1 = new Vector3(0, (float)Math.Sin(angle), (float)Math.Cos(angle)) + offset;
+                Vector3 v2 = new Vector3(1, (float)Math.Sin(angle), (float)Math.Cos(angle)) + offset;
+                Vector3 v3 = new Vector3(1, (float)Math.Sin(nextAngle), (float)Math.Cos(nextAngle)) + offset;
+                Vector3 v4 = new Vector3(0, (float)Math.Sin(nextAngle), (float)Math.Cos(nextAngle)) + offset;
+
+                mb.AddQuad(v1, v2, v3, v4, true);
+
+                //Draw the two sides
+                v1 = new Vector3(1, -1, -1) + offset;
+                v2 = new Vector3(1, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
+                v3 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
+
+                mb.AddTriangle(v1, v2, v3, false);
+                offset = new Vector3(-1, 0, 0);
+                mb.AddTriangle(v1 + offset, v3 + offset, v2 + offset, false);
+            }
             return mb.End();
         }
 
