@@ -17,6 +17,11 @@ namespace SkySlider.Maps
         //3 = quarter box
         //4 = eighth box
         //5 = convex ramp
+        //6 = slope1 ramp
+        //7 = slope2 ramp
+        //8 = slopehalf ramp
+        //10 = slope2 base
+        //11 = slopehalf base
 
         private static Mesh[] blockMeshes;
         private static int sphereIterations = 6;
@@ -31,6 +36,11 @@ namespace SkySlider.Maps
             blockMeshes[3] = BuildQuarterBoxMesh(mb, content);
             blockMeshes[4] = BuildEighthBoxMesh(mb, content);
             blockMeshes[5] = BuildConvexRamp(mb, content);
+            blockMeshes[6] = BuildSlope1Ramp(mb, content);
+            blockMeshes[7] = BuildSlope2Ramp(mb, content);
+            blockMeshes[8] = BuildSlopeHalfRamp(mb, content);
+            blockMeshes[10] = BuildSlope2Base(mb, content);
+            blockMeshes[11] = BuildSlopeHalfBase(mb, content);
         }
 
         private static Mesh BuildBoxMesh(MeshBuilder mb, ContentManager c)
@@ -132,6 +142,137 @@ namespace SkySlider.Maps
             }
             return mb.End();
         }
+
+        private static Mesh BuildSlope1Ramp(MeshBuilder mb, ContentManager content)
+        {
+            float width = 1f;
+            float height = 1f;
+            float depth = 1f;
+
+            float widthHalf = width / 2;
+            float heightHalf = height / 2;
+            float depthHalf = depth / 2;
+
+            mb.Begin();
+            //front
+            mb.AddTriangle(new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), false);
+            //left
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            //back
+            mb.AddTriangle( new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
+            //right
+            mb.AddQuad(new Vector3(-widthHalf, heightHalf, (depthHalf)), new Vector3(-widthHalf, heightHalf, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
+            //top
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(widthHalf, heightHalf, -(depthHalf)), new Vector3((widthHalf), heightHalf, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
+            //bottom
+            mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
+        private static Mesh BuildSlope2Ramp(MeshBuilder mb, ContentManager content)
+        {
+            float width = 1f;
+            float height = 1f;
+            float depth = 1f;
+
+            float widthHalf = width / 2;
+            float heightHalf = height / 2;
+            float depthHalf = depth / 2;
+
+            mb.Begin();
+            //front
+            mb.AddTriangle(new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3((0), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), false);
+            //left
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            //back
+            mb.AddTriangle(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), false);
+            //right
+            mb.AddQuad(new Vector3(-widthHalf, heightHalf, (depthHalf)), new Vector3(-widthHalf, heightHalf, -(depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), new Vector3((0), -(heightHalf), (depthHalf)), false);
+            //top
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(0, heightHalf, -(depthHalf)), new Vector3((0), heightHalf, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
+            //bottom
+            mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(0, -(heightHalf), (depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
+        private static Mesh BuildSlopeHalfRamp(MeshBuilder mb, ContentManager content)
+        {
+            float width = 1f;
+            float height = 1f;
+            float depth = 1f;
+
+            float widthHalf = width / 2;
+            float heightHalf = height / 2;
+            float depthHalf = depth / 2;
+
+            mb.Begin();
+            //front
+            mb.AddTriangle(new Vector3(-widthHalf, (0), (depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), false);
+            //left
+            mb.AddQuad(new Vector3(-widthHalf, (0), -(depthHalf)), new Vector3(-widthHalf, (0), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            //back
+            mb.AddTriangle(new Vector3(-widthHalf, (0), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
+            //right
+            mb.AddQuad(new Vector3(-widthHalf, 0, (depthHalf)), new Vector3(-widthHalf, 0, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
+            //top
+            mb.AddQuad(new Vector3(-widthHalf, (0), -(depthHalf)), new Vector3(widthHalf, -heightHalf, -(depthHalf)), new Vector3((widthHalf), -heightHalf, (depthHalf)), new Vector3(-(widthHalf), (0), (depthHalf)), false);
+            //bottom
+            mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
+        private static Mesh BuildSlope2Base(MeshBuilder mb, ContentManager content)
+        {
+            float width = 1f;
+            float height = 1f;
+            float depth = 1f;
+
+            float widthHalf = width / 2;
+            float heightHalf = height / 2;
+            float depthHalf = depth / 2;
+
+            mb.Begin();
+            //front
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(0, heightHalf, (depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), false);
+            //left
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            //back
+            mb.AddQuad(new Vector3(0, heightHalf, -(depthHalf)), new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
+            //right
+            mb.AddQuad(new Vector3(0, heightHalf, (depthHalf)), new Vector3(0, heightHalf, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
+            //top
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(0, heightHalf, -(depthHalf)), new Vector3((0), heightHalf, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
+            //bottom
+            mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
+        private static Mesh BuildSlopeHalfBase(MeshBuilder mb, ContentManager content)
+        {
+            float width = 1f;
+            float height = 1f;
+            float depth = 1f;
+
+            float widthHalf = width / 2;
+            float heightHalf = height / 2;
+            float depthHalf = depth / 2;
+
+            mb.Begin();
+            //front
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(widthHalf, 0, (depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), false);
+            //left
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-widthHalf, (heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), (depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            //back
+            mb.AddQuad(new Vector3(widthHalf, 0, -(depthHalf)), new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), false);
+            //right
+            mb.AddQuad(new Vector3(widthHalf, 0, (depthHalf)), new Vector3(widthHalf, 0, -(depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3((widthHalf), -(heightHalf), (depthHalf)), false);
+            //top
+            mb.AddQuad(new Vector3(-widthHalf, (heightHalf), -(depthHalf)), new Vector3(widthHalf, 0, -(depthHalf)), new Vector3((widthHalf), 0, (depthHalf)), new Vector3(-(widthHalf), (heightHalf), (depthHalf)), false);
+            //bottom
+            mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false);
+            return mb.End();
+        }
+
 
         public static Mesh GetMeshFromID(byte id)
         {
