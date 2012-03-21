@@ -9,6 +9,10 @@ using GraphicsToolkit.Graphics;
 
 namespace SkySlider.Maps
 {
+    /// <summary>
+    /// This static class contains methods for the creation and handling of the blocks
+    /// that make up the map.
+    /// </summary>
     public class BlockData
     {
         //0 = empty
@@ -25,8 +29,13 @@ namespace SkySlider.Maps
         //11 = slopehalf base
 
         private static Mesh[] blockMeshes;
-        private static int sphereIterations = 6;
+        private static int sphereIterations = 6; //level of detail for curved blocks
 
+        /// <summary>
+        /// Uses MeshBuilder to create a mesh for each block type, storing them into an array
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="content"></param>
         public static void BuildMeshes(GraphicsDevice g, ContentManager content)
         {
             MeshBuilder mb = new MeshBuilder(g);
@@ -44,6 +53,9 @@ namespace SkySlider.Maps
             blockMeshes[10] = BuildSlope2Base(mb, content);
             blockMeshes[11] = BuildSlopeHalfBase(mb, content);
         }
+
+        /*The following methods (BuildBoxMesh(), BuildHalfBoxMesh(), BuildSlopeHalfBase(), etc.)
+         * each use MeshBuilder to build a mesh of the appropriate block type*/
 
         private static Mesh BuildBoxMesh(MeshBuilder mb, ContentManager c)
         {
@@ -332,7 +344,11 @@ namespace SkySlider.Maps
             return mb.End();
         }
 
-
+        /// <summary>
+        /// Returns a block mesh of the requested type
+        /// </summary>
+        /// <param name="id">Type of block to return a mesh of</param>
+        /// <returns>A block mesh of the requested type</returns>
         public static Mesh GetMeshFromID(byte id)
         {
             return blockMeshes[id];

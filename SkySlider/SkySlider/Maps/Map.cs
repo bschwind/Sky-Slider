@@ -8,14 +8,20 @@ using GraphicsToolkit.Graphics;
 
 namespace SkySlider.Maps
 {
+    /// <summary>
+    /// Holds data for and draws the 3D array of blocks that make up the map
+    /// </summary>
     public class Map
     {
         private int width = 10;
         private int height = 10;
         private int depth = 10;
 
-        private Block[, ,] blocks;
+        private Block[, ,] blocks; //3D array of blocks
 
+        /// <summary>
+        /// Generates the map by placing blocks into the block array
+        /// </summary>
         public Map()
         {
             blocks = new Block[width, height, depth];
@@ -35,6 +41,12 @@ namespace SkySlider.Maps
             }
         }
 
+        /// <summary>
+        /// Draws each block
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="batch"></param>
+        /// <param name="cam"></param>
         public void DebugDraw(GameTime g, PrimitiveBatch batch, Camera cam)
         {
             for (int x = 0; x < width; x++)
