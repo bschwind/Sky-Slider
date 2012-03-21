@@ -166,6 +166,9 @@ namespace SkySlider.Maps
                 offset = new Vector3(-1, 0, 0);
                 mb.AddTriangle(v1+offset, v3+offset, v2+offset, false);
             }
+
+            mb.RotateAllVerts(Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2));
+
             return mb.End();
         }
 
@@ -271,6 +274,9 @@ namespace SkySlider.Maps
                 offset = new Vector3(-1, 0, 0);
                 mb.AddTriangle(v1 + offset, v3 + offset, v2 + offset, false);
             }
+
+            mb.RotateAllVerts(Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2));
+
             return mb.End();
         }
 
