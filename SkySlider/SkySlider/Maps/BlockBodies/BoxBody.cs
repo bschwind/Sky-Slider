@@ -20,6 +20,12 @@ namespace SkySlider.Maps.BlockBodies
             }
         }
 
+        public BoxBody(Vector3 pos, Vector3 vel, float mass, float size)
+            : base(pos, vel, 0f, mass, 1f)
+        {
+            this.sizeHalf = size/2;
+        }
+
         public override void GenerateMotionAABB(float dt)
         {
             throw new NotImplementedException();
