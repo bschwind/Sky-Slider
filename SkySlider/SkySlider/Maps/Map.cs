@@ -36,8 +36,6 @@ namespace SkySlider.Maps
                         blocks[x, y, z].Type = (byte)r.Next(0, 11);
                         blocks[x, y, z].RotationAxis = (byte)0;
                         blocks[x, y, z].Rotation = (byte)0;
-                        //blocks[x, y, z].Type = 8;
-                        
                     }
                 }
             }

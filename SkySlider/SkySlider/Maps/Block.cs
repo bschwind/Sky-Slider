@@ -13,16 +13,50 @@ namespace SkySlider.Maps
     public struct Block
     {
         public byte Type;
-        public byte RotationAxis;   //0 = PositiveX
+        private byte rotationAxis;   //0 = PositiveX
                                     //1 = PositiveZ
                                     //2 = NegativeX
                                     //3 = NegativeZ
                                     //4 = PositiveY
                                     //5 = NegativeY
 
-        public byte Rotation;       //0 = 0 degrees
+        private byte rotation;       //0 = 0 degrees
                                     //1 = 90 degrees counter-clockwise
                                     //2 = 180 degrees counter-clockwise
                                     //3 = 270 degrees counter-clockwise
+
+        public byte RotationAxis
+        {
+            get
+            {
+                return rotationAxis;
+            }
+            set
+            {
+                if (value < 0 || value > 5)
+                {
+                    throw new Exception("Rotation axis must be between 0 and 5 inclusive");
+                }
+
+                rotationAxis = value;
+            }
+        }
+
+        public byte Rotation
+        {
+            get
+            {
+                return rotation;
+            }
+            set
+            {
+                if (value < 0 || value > 3)
+                {
+                    throw new Exception("Rotation must be between 0 and 3 inclusive");
+                }
+
+                rotation = value;
+            }
+        }
     }
 }
