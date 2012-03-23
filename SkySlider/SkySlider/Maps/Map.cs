@@ -34,6 +34,8 @@ namespace SkySlider.Maps
                     for (int z = 0; z < depth; z++)
                     {
                         blocks[x, y, z].Type = (byte)r.Next(0, 11);
+                        blocks[x, y, z].RotationAxis = (byte)0;
+                        blocks[x, y, z].Rotation = (byte)0;
                         //blocks[x, y, z].Type = 8;
                         
                     }
@@ -61,7 +63,7 @@ namespace SkySlider.Maps
                             continue;
                         }
 
-                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
             }

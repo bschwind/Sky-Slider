@@ -30,6 +30,7 @@ namespace SkySlider.Maps
 
         private static Mesh[] blockMeshes;
         private static int sphereIterations = 6; //level of detail for curved blocks
+        private static Matrix[,] rotations;
 
         /// <summary>
         /// Uses MeshBuilder to create a mesh for each block type, storing them into an array
@@ -52,6 +53,50 @@ namespace SkySlider.Maps
             blockMeshes[9] = BuildConcaveRamp(mb, content);
             blockMeshes[10] = BuildSlope2Base(mb, content);
             blockMeshes[11] = BuildSlopeHalfBase(mb, content);
+
+            BuildRotations();
+        }
+
+        private static void BuildRotations()
+        {
+            rotations = new Matrix[6, 4];
+
+            float threePiOverTwo = (MathHelper.Pi * 3f) / 2f;
+
+            rotations[0, 0] = Matrix.Identity;
+            rotations[0, 1] = Matrix.CreateRotationX(MathHelper.PiOver2);
+            rotations[0, 2] = Matrix.CreateRotationX(MathHelper.Pi);
+            rotations[0, 3] = Matrix.CreateRotationX(threePiOverTwo);
+
+            rotations[1, 0] = Matrix.CreateRotationY(-MathHelper.PiOver2);
+            rotations[1, 1] = Matrix.CreateRotationY(-MathHelper.PiOver2) * Matrix.CreateRotationZ(MathHelper.PiOver2);
+            rotations[1, 2] = Matrix.CreateRotationY(-MathHelper.PiOver2) * Matrix.CreateRotationZ(MathHelper.Pi);
+            rotations[1, 3] = Matrix.CreateRotationY(-MathHelper.PiOver2) * Matrix.CreateRotationZ(threePiOverTwo);
+
+            rotations[2, 0] = Matrix.CreateRotationY(-MathHelper.Pi);
+            rotations[2, 1] = Matrix.CreateRotationY(-MathHelper.Pi) * Matrix.CreateRotationX(-MathHelper.PiOver2);
+            rotations[2, 2] = Matrix.CreateRotationY(-MathHelper.Pi) * Matrix.CreateRotationX(-MathHelper.Pi);
+            rotations[2, 3] = Matrix.CreateRotationY(-MathHelper.Pi) * Matrix.CreateRotationX(-threePiOverTwo);
+
+            rotations[3, 0] = Matrix.CreateRotationY(-threePiOverTwo);
+            rotations[3, 1] = Matrix.CreateRotationY(-threePiOverTwo) * Matrix.CreateRotationZ(-MathHelper.PiOver2);
+            rotations[3, 2] = Matrix.CreateRotationY(-threePiOverTwo) * Matrix.CreateRotationZ(-MathHelper.Pi);
+            rotations[3, 3] = Matrix.CreateRotationY(-threePiOverTwo) * Matrix.CreateRotationZ(-threePiOverTwo);
+
+            rotations[4, 0] = Matrix.CreateRotationZ(MathHelper.PiOver2);
+            rotations[4, 1] = Matrix.CreateRotationZ(MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.PiOver2);
+            rotations[4, 2] = Matrix.CreateRotationZ(MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.Pi);
+            rotations[4, 3] = Matrix.CreateRotationZ(MathHelper.PiOver2) * Matrix.CreateRotationY(threePiOverTwo);
+
+            rotations[5, 0] = Matrix.CreateRotationZ(-MathHelper.PiOver2);
+            rotations[5, 1] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.PiOver2);
+            rotations[5, 2] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.Pi);
+            rotations[5, 3] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(threePiOverTwo);
+        }
+
+        public static Matrix GetRotationMatrix(Block b)
+        {
+            return rotations[b.RotationAxis, b.Rotation];
         }
 
         /*The following methods (BuildBoxMesh(), BuildHalfBoxMesh(), BuildSlopeHalfBase(), etc.)
