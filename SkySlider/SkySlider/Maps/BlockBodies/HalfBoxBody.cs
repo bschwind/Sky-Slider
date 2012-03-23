@@ -8,9 +8,9 @@ using Microsoft.Xna.Framework;
 
 namespace SkySlider.Maps.BlockBodies
 {
-    public class BoxBody : RigidBody3D
+    public class HalfBoxBody : RigidBody3D
     {
-        private float sizeHalf; //half of the box's width, also is half of the box's depth
+        private float sizeHalf; //half of the box's size
 
         public float SizeHalf
         {
@@ -20,10 +20,10 @@ namespace SkySlider.Maps.BlockBodies
             }
         }
 
-        public BoxBody(Vector3 pos, Vector3 vel, float mass, float size)
+        public HalfBoxBody(Vector3 pos, Vector3 vel, float mass, float size)
             : base(pos, vel, 0f, mass, 1f)
         {
-            this.sizeHalf = size/2;
+            this.sizeHalf = size / 2;
         }
 
         public override void GenerateMotionAABB(float dt)
@@ -56,9 +56,9 @@ namespace SkySlider.Maps.BlockBodies
                 {
                     pa.Y = this.Pos.Y - sizeHalf;
                 }
-                else if (c.Pos.Y > this.Pos.Y)
+                else if (c.Pos.Y > this.Pos.Y + sizeHalf)
                 {
-                    pa.Y = this.Pos.Y;
+                    pa.Y = this.Pos.Y + sizeHalf;
                 }
                 else
                 {

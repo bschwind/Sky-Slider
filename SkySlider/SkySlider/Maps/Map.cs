@@ -34,7 +34,7 @@ namespace SkySlider.Maps
                     for (int z = 0; z < depth; z++)
                     {
                         blocks[x, y, z].Type = (byte)r.Next(0, 11);
-                        //blocks[x, y, z].Type = 9;
+                        //blocks[x, y, z].Type = 8;
                         
                     }
                 }
