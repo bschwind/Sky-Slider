@@ -19,6 +19,30 @@ namespace SkySlider.Maps
 
         private Block[, ,] blocks; //3D array of blocks
 
+        public int Width
+        {
+            get
+            {
+                return width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return height;
+            }
+        }
+
+        public int Depth
+        {
+            get
+            {
+                return depth;
+            }
+        }
+
         /// <summary>
         /// Generates the map by placing blocks into the block array
         /// </summary>
@@ -36,9 +60,22 @@ namespace SkySlider.Maps
                         blocks[x, y, z].Type = (byte)r.Next(0, 11);
                         blocks[x, y, z].RotationAxis = (byte)0;
                         blocks[x, y, z].Rotation = (byte)0;
+                        if (r.Next() % 4 == 0)
+                        {
+                            blocks[x, y, z].Type = 1;
+                        }
+                        else
+                        {
+                            blocks[x, y, z].Type = 0;
+                        }
                     }
                 }
             }
+        }
+
+        public Block GetBlockAt(int row, int col, int stack)
+        {
+            return blocks[row, col, stack];
         }
 
         /// <summary>
