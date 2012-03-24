@@ -31,6 +31,7 @@ namespace SkySlider.Maps
         private static Mesh[] blockMeshes;
         private static int sphereIterations = 6; //level of detail for curved blocks
         private static Matrix[,] rotations;
+        private static Matrix[,] inverseRotations;
 
         /// <summary>
         /// Uses MeshBuilder to create a mesh for each block type, storing them into an array
@@ -92,11 +93,26 @@ namespace SkySlider.Maps
             rotations[5, 1] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.PiOver2);
             rotations[5, 2] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(MathHelper.Pi);
             rotations[5, 3] = Matrix.CreateRotationZ(-MathHelper.PiOver2) * Matrix.CreateRotationY(threePiOverTwo);
+
+            inverseRotations = new Matrix[6, 4];
+
+            for (int i = 0; i < 6; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    inverseRotations[i, j] = Matrix.Invert(rotations[i, j]);
+                }
+            }            
         }
 
         public static Matrix GetRotationMatrix(Block b)
         {
             return rotations[b.RotationAxis, b.Rotation];
+        }
+
+        public static Matrix GetInverseRotationMatrix(Block b)
+        {
+            return inverseRotations[b.RotationAxis, b.Rotation];
         }
 
         /*The following methods (BuildBoxMesh(), BuildHalfBoxMesh(), BuildSlopeHalfBase(), etc.)
