@@ -33,7 +33,7 @@ namespace SkySlider.Panels
             base.LoadContent(content);
 
             map = new Map();
-            BlockData.BuildMeshes(Device, content);
+            BlockData.Initialize(Device, content);
             primBatch = new PrimitiveBatch(Device);
 
             MeshBuilder mb = new MeshBuilder(Device);
