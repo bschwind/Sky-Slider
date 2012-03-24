@@ -6,6 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.Graphics;
+using GraphicsToolkit.Physics._3D;
+using GraphicsToolkit.Physics._3D.Bodies;
+using SkySlider.Maps.BlockBodies;
 
 namespace SkySlider.Maps
 {
@@ -32,13 +35,14 @@ namespace SkySlider.Maps
         private static int sphereIterations = 6; //level of detail for curved blocks
         private static Matrix[,] rotations;
         private static Matrix[,] inverseRotations;
+        private static RigidBody3D[] blockBodies;
 
         /// <summary>
         /// Uses MeshBuilder to create a mesh for each block type, storing them into an array
         /// </summary>
         /// <param name="g"></param>
         /// <param name="content"></param>
-        public static void BuildMeshes(GraphicsDevice g, ContentManager content)
+        public static void Initialize(GraphicsDevice g, ContentManager content)
         {
             MeshBuilder mb = new MeshBuilder(g);
 
@@ -56,6 +60,14 @@ namespace SkySlider.Maps
             blockMeshes[11] = BuildSlopeHalfBase(mb, content);
 
             BuildRotations();
+            AssembleBlockBodies();
+        }
+
+        private static void AssembleBlockBodies()
+        {
+            blockBodies = new RigidBody3D[15];
+
+            blockBodies[1] = new BoxBody(1f);
         }
 
         private static void BuildRotations()
@@ -113,6 +125,11 @@ namespace SkySlider.Maps
         public static Matrix GetInverseRotationMatrix(Block b)
         {
             return inverseRotations[b.RotationAxis, b.Rotation];
+        }
+
+        public static RigidBody3D GetBlockBody(Block b)
+        {
+            return blockBodies[(int)b.Type];
         }
 
         /*The following methods (BuildBoxMesh(), BuildHalfBoxMesh(), BuildSlopeHalfBase(), etc.)
