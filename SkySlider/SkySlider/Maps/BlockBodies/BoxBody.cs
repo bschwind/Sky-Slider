@@ -20,15 +20,15 @@ namespace SkySlider.Maps.BlockBodies
             }
         }
 
-        public BoxBody(Vector3 pos, Vector3 vel, float mass, float size)
-            : base(pos, vel, 0f, mass, 1f)
+        public BoxBody(float size)
+            : base(Vector3.Zero, Vector3.Zero, 0f, 0f, 1f)
         {
             this.sizeHalf = size/2;
         }
 
         public override void GenerateMotionAABB(float dt)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override GraphicsToolkit.Physics._3D.Contact3D GenerateContact(RigidBody3D rb, float dt)
@@ -36,47 +36,11 @@ namespace SkySlider.Maps.BlockBodies
             if (rb as SphereBody != null)
             {
                 SphereBody c = rb as SphereBody; //sphere that this body is colliding with
-                Vector3 pa; //point on this body closest to the sphere
+                Vector3 pa = c.Pos; //point on this body closest to the sphere
 
-                //find x coord of pa
-                if (c.Pos.X < this.Pos.X - sizeHalf)
-                {
-                    pa.X = this.Pos.X - sizeHalf;
-                }
-                else if (c.Pos.X > this.Pos.X + sizeHalf)
-                {
-                    pa.X = this.Pos.X + sizeHalf;
-                }
-                else
-                {
-                    pa.X = c.Pos.X;
-                }
-                //find y coord of pa
-                if (c.Pos.Y < this.Pos.Y - sizeHalf)
-                {
-                    pa.Y = this.Pos.Y - sizeHalf;
-                }
-                else if (c.Pos.Y > this.Pos.Y)
-                {
-                    pa.Y = this.Pos.Y;
-                }
-                else
-                {
-                    pa.Y = c.Pos.Y;
-                }
-                //find z coord of pa
-                if (c.Pos.Z < this.Pos.Z - sizeHalf)
-                {
-                    pa.Z = this.Pos.Z - sizeHalf;
-                }
-                else if (c.Pos.Z > this.Pos.Z + sizeHalf)
-                {
-                    pa.Z = this.Pos.Z + sizeHalf;
-                }
-                else
-                {
-                    pa.Z = c.Pos.Z;
-                }
+                pa.X = MathHelper.Clamp(pa.X, -0.5f, 0.5f);
+                pa.Y = MathHelper.Clamp(pa.Y, -0.5f, 0.5f);
+                pa.Z = MathHelper.Clamp(pa.Z, -0.5f, 0.5f);
 
                 Vector3 normal = rb.Pos - pa;
                 float normLen = normal.Length();
