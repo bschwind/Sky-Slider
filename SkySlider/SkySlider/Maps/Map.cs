@@ -62,7 +62,7 @@ namespace SkySlider.Maps
                         blocks[x, y, z].Rotation = (byte)0;
                         if (r.Next() % 4 == 0)
                         {
-                            blocks[x, y, z].Type = 1;
+                            blocks[x, y, z].Type = 4;
                         }
                         else
                         {
