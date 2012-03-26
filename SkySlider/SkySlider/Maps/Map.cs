@@ -78,6 +78,11 @@ namespace SkySlider.Maps
             return blocks[row, col, stack];
         }
 
+        public void SetBlockAt(int row, int col, int stack, Block b)
+        {
+            blocks[row, col, stack] = b;
+        }
+
         /// <summary>
         /// Draws each block
         /// </summary>
