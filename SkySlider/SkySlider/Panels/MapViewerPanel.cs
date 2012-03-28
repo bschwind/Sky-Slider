@@ -19,6 +19,7 @@ namespace SkySlider.Panels
         PrimitiveBatch primBatch;
         Mesh testMesh;
         MeshNode mNode;
+        MeshNode startMarker;
         float rotation = 0f;
 
         public MapViewerPanel(Vector2 upLeft, Vector2 botRight)
@@ -32,6 +33,7 @@ namespace SkySlider.Panels
         {
             base.LoadContent(content);
 
+    //        map = new Map("startPosTest.txt");
             map = new Map();
             BlockData.Initialize(Device, content);
             primBatch = new PrimitiveBatch(Device);
@@ -51,6 +53,10 @@ namespace SkySlider.Panels
             MeshNode another = new MeshNode(testMesh);
             another.SetPos(new Vector3(0, 2, 0));
 
+
+            Mesh sphere = mb.CreateSphere(0.1f, 10, 10);
+            startMarker = new MeshNode(sphere);
+            startMarker.SetPos(map.StartPos);
             //child.AddChild(another);
             //mNode.AddChild(child);
         }
@@ -75,11 +81,14 @@ namespace SkySlider.Panels
             base.Draw(g);
 
             primBatch.Begin(PrimitiveType.LineList, cam);
-            primBatch.DrawXZGrid(10, 10, Color.Blue);
-            primBatch.DrawXYGrid(10, 10, Color.Red);
-            primBatch.DrawYZGrid(10, 10, Color.Green);
+            primBatch.DrawXZGrid(map.Width, map.Depth, Color.Blue);
+            primBatch.DrawXYGrid(map.Width, map.Height, Color.Red);
+            primBatch.DrawYZGrid(map.Height, map.Depth, Color.Green);
+
+            primBatch.DrawAABB(new Vector3((int)map.StartPos.X, (int)map.StartPos.Y, (int)map.StartPos.Z) + new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), Color.Gold);
             primBatch.End();
 
+            
             //mNode.Draw(g, Matrix.Identity, primBatch, cam);
 
             map.DebugDraw(g, primBatch, cam);

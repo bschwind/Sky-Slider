@@ -100,7 +100,7 @@ namespace SkySlider.Panels
             }
 
             UpdateRotations(placePos);
-
+            UpdateStartEndMarkers();
             UpdateSave();
 
             marker.SetPos(placePos);
@@ -164,6 +164,25 @@ namespace SkySlider.Panels
             }
         }
 
+        private void UpdateStartEndMarkers()
+        {
+            if (InputHandler.IsNewKeyPress(Keys.E))
+            {
+                Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
+                if (b.Type == 0)
+                {
+                    b.IsMarker = !b.IsMarker;
+                }
+
+                if (b.IsMarker)
+                {
+                    //add to array of Vector3s, which will be drawn as AABBs.
+                }
+
+            }
+
+        }
+
         private void UpdateSave()
         {
             if (InputHandler.KeyState.IsKeyDown(Keys.Q) && InputHandler.LastKeyState.IsKeyUp(Keys.Q))
@@ -180,6 +199,7 @@ namespace SkySlider.Panels
                         {
                             Block b = map.GetBlockAt(x, y, z);
                             sw.WriteLine(b.Type + " " + b.Rotation + " " + b.RotationAxis);
+                            //also save IsMarker field
                         }
                     }
                 }
