@@ -38,6 +38,7 @@ namespace SkySlider.Panels
         private MouseState mouseStateCurrent;
         private byte placeType;
         private Block placeBlock = new Block();
+        private Vector3 placePos;
         
 
         public MapEditorPanel()
@@ -77,7 +78,7 @@ namespace SkySlider.Panels
             cam.Update(g);
             base.Update(g);
 
-            Vector3 placePos = cam.Pos + 2 * cam.Dir;
+            placePos = cam.Pos + 2 * cam.Dir;
 
             mouseStateCurrent = Mouse.GetState();
 
@@ -202,7 +203,7 @@ namespace SkySlider.Panels
             primBatch.DrawYZGrid(map.Height, map.Depth, Color.Green);
 
             //Draw preview box
-            //TODO
+            primBatch.DrawAABB(new Vector3((int)placePos.X, (int)placePos.Y, (int)placePos.Z) + new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), Color.Orange);
             primBatch.End();
 
             map.DebugDraw(g, primBatch, cam);
