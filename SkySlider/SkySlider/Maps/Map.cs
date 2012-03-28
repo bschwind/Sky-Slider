@@ -58,18 +58,17 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        //blocks[x, y, z].Type = (byte)r.Next(0, 11);
-                        //blocks[x, y, z].RotationAxis = (byte)0;
-                        //blocks[x, y, z].Rotation = (byte)0;
-                        //if (r.Next() % 4 == 0)
-                        //{
-                        //    blocks[x, y, z].Type = 1;
-                        //}
-                        //else
-                        //{
-                        //    blocks[x, y, z].Type = 0;
-                        //}
-                        blocks[x, y, z].Type = 0;
+                        blocks[x, y, z].Type = (byte)r.Next(0, 11);
+                        blocks[x, y, z].RotationAxis = (byte)0;
+                        blocks[x, y, z].Rotation = (byte)0;
+                        if (r.Next() % 4 == 0)
+                        {
+                            blocks[x, y, z].Type = 4;
+                        }
+                        else
+                        {
+                            blocks[x, y, z].Type = 0;
+                        }
                     }
                 }
             }

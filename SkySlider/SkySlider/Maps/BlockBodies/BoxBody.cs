@@ -10,20 +10,10 @@ namespace SkySlider.Maps.BlockBodies
 {
     public class BoxBody : RigidBody3D
     {
-        private float sizeHalf; //half of the box's width, also is half of the box's depth
-
-        public float SizeHalf
-        {
-            get
-            {
-                return sizeHalf;
-            }
-        }
-
-        public BoxBody(float size)
+        public BoxBody()
             : base(Vector3.Zero, Vector3.Zero, 0f, 0f, 1f)
         {
-            this.sizeHalf = size/2;
+
         }
 
         public override void GenerateMotionAABB(float dt)

@@ -67,7 +67,10 @@ namespace SkySlider.Maps
         {
             blockBodies = new RigidBody3D[15];
 
-            blockBodies[1] = new BoxBody(1f);
+            blockBodies[1] = new BoxBody();
+            blockBodies[2] = new HalfBoxBody();
+            blockBodies[3] = new QuarterBoxBody();
+            blockBodies[4] = new EightBoxBody();
         }
 
         private static void BuildRotations()
