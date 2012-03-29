@@ -39,6 +39,7 @@ namespace SkySlider.Panels
         private byte placeType;
         private Block placeBlock = new Block();
         private Vector3 placePos;
+        private LinkedList<Vector3> startEndMarkers = new LinkedList<Vector3>();
         
 
         public MapEditorPanel()
@@ -103,7 +104,7 @@ namespace SkySlider.Panels
             UpdateStartEndMarkers();
             UpdateSave();
 
-            marker.SetPos(placePos);
+      //      marker.SetPos(placePos);
            
             engine.Update(g);
 
@@ -169,16 +170,14 @@ namespace SkySlider.Panels
             if (InputHandler.IsNewKeyPress(Keys.E))
             {
                 Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
-                if (b.Type == 0)
+                if (startEndMarkers.Contains(new Vector3((int)placePos.X, (int)placePos.Y, (int)placePos.Z)))
                 {
-                    b.IsMarker = !b.IsMarker;
+                    startEndMarkers.Remove(new Vector3((int)placePos.X, (int)placePos.Y, (int)placePos.Z));
                 }
-
-                if (b.IsMarker)
+                else
                 {
-                    //add to array of Vector3s, which will be drawn as AABBs.
+                    startEndMarkers.AddLast(new Vector3((int)placePos.X, (int)placePos.Y, (int)placePos.Z));
                 }
-
             }
 
         }
@@ -198,8 +197,16 @@ namespace SkySlider.Panels
                         for (int z = 0; z < map.Depth; z++)
                         {
                             Block b = map.GetBlockAt(x, y, z);
-                            sw.WriteLine(b.Type + " " + b.Rotation + " " + b.RotationAxis);
-                            //also save IsMarker field
+                            sw.Write(b.Type + " " + b.Rotation + " " + b.RotationAxis);
+                            if (startEndMarkers.Contains(new Vector3(x, y, z)))
+                            {
+                                sw.WriteLine(" " + 1);
+                            }
+                            else
+                            {
+                                sw.WriteLine();
+                            }
+
                         }
                     }
                 }
@@ -224,6 +231,12 @@ namespace SkySlider.Panels
 
             //Draw preview box
             primBatch.DrawAABB(new Vector3((int)placePos.X, (int)placePos.Y, (int)placePos.Z) + new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), Color.Orange);
+
+            foreach (Vector3 v in startEndMarkers)
+            {
+                primBatch.DrawAABB(v + new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), Color.HotPink);
+            }
+            
             primBatch.End();
 
             map.DebugDraw(g, primBatch, cam);

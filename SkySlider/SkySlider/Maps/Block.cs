@@ -24,7 +24,6 @@ namespace SkySlider.Maps
                                     //1 = 90 degrees counter-clockwise
                                     //2 = 180 degrees counter-clockwise
                                     //3 = 270 degrees counter-clockwise
-        private Boolean isMarker; //true if block will considered as start/end marker
 
         public byte RotationAxis
         {
@@ -57,22 +56,6 @@ namespace SkySlider.Maps
                 }
 
                 rotation = value;
-            }
-        }
-
-        public Boolean IsMarker
-        {
-            get
-            {
-                return isMarker;
-            }
-            set
-            {
-                if (this.Type != 0)
-                {
-                    throw new Exception("Block must be empty to be start/end marker");
-                }
-                isMarker = value;
             }
         }
     }

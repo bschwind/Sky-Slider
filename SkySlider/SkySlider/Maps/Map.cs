@@ -20,6 +20,11 @@ namespace SkySlider.Maps
 
         private Block[, ,] blocks; //3D array of blocks
 
+        private List<Vector3> startEndMarkers = new List<Vector3>(); //list of Vector3s to be considered for start/end markers
+        private Vector3 startLocation, endLocation; //start and end markers; get method will be needed.
+        private int minManhattanDistance = 25; //minimum distance between start and end markers
+        //start and end markers are only generated in the overloaded constructor.
+
         public int Width
         {
             get
@@ -44,6 +49,7 @@ namespace SkySlider.Maps
             }
         }
 
+
         /// <summary>
         /// Generates the map by placing blocks into the block array
         /// </summary>
@@ -58,6 +64,11 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
+                        if (y == 0) //auto-create floor
+                        {
+                            blocks[x, y, z].Type = 1;
+                            continue;
+                        }
                         blocks[x, y, z].Type = (byte)r.Next(0, 11);
                         blocks[x, y, z].RotationAxis = (byte)0;
                         blocks[x, y, z].Rotation = (byte)0;
@@ -96,14 +107,32 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
+
                         blockDataString = sr.ReadLine();
                         blocks[x, y, z].Type = byte.Parse(blockDataString.Split(' ')[0]);
                         blocks[x, y, z].Rotation = byte.Parse(blockDataString.Split(' ')[1]);
                         blocks[x, y, z].RotationAxis = byte.Parse(blockDataString.Split(' ')[2]);
+                        if (blockDataString.Split(' ').Length == 4) //if block is start/end marker...
+                        {
+                            startEndMarkers.Add(new Vector3(x, y, z));
+   //                         blocks[x, y, z].Type = 9;
+                        }
                     }
                 }
             }
             sr.Close();
+
+            if (startEndMarkers.Count >= 2) //if there are sufficient start/end markers
+            {
+                generateMarkers(); //determine start/end positions
+                Block startMarker = new Block();
+                Block endMarker = new Block();
+                startMarker.Type = 8; //for debug purposes
+                endMarker.Type = 9;
+                SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
+                SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
+            }
+
 
         }
 
@@ -155,6 +184,42 @@ namespace SkySlider.Maps
                         batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
+            }
+        }
+
+        private void generateMarkers()
+        {
+            Random r = new Random();
+            int indexOffset = r.Next(0, startEndMarkers.Count);
+            bool isSuccessful = false;
+
+            for (int i = 0; i < startEndMarkers.Count; i++)
+            {
+                if (isSuccessful)
+                {
+                    break;
+                }
+                startLocation = startEndMarkers.ElementAt((i + indexOffset) % startEndMarkers.Count);
+                for (int j = 0; j < startEndMarkers.Count; j++)
+                {
+                    endLocation = startEndMarkers.ElementAt(j);
+                    if (endLocation == startLocation)
+                    {
+                        continue;
+                    }
+                    if (Math.Abs(endLocation.X - startLocation.X) + Math.Abs(endLocation.Y - startLocation.Y) + Math.Abs(endLocation.Z - startLocation.Z) < minManhattanDistance)
+                    {
+                        continue;
+                    }
+
+                    //if below code is reached, the start/end combination are valid
+                    isSuccessful = true;
+                    break;
+                }
+            }
+            if (!isSuccessful)
+            {
+                throw new Exception("No valid start/end combinations.");
             }
         }
     }
