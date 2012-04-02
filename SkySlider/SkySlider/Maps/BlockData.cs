@@ -91,6 +91,7 @@ namespace SkySlider.Maps
             blockBodies[2] = new HalfBoxBody();
             blockBodies[3] = new QuarterBoxBody();
             blockBodies[4] = new EightBoxBody();
+            blockBodies[5] = new ConvexRampBody();
             blockBodies[6] = new Slope1RampBody();
         }
 
