@@ -22,6 +22,7 @@ namespace SkySlider.Panels
         private FirstPersonCamera cam;
         private Mesh sphere;
         private PrimitiveBatch primBatch;
+        private Player player;
 
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
@@ -40,7 +41,11 @@ namespace SkySlider.Panels
 
             map = new Map();
             partition = new MapPartition(map);
+
+            player = new Player(new Vector3(5,5,5));
+
             engine = new PhysicsEngine3D(partition);
+            engine.AddRigidBody(player.Body);
 
             MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
@@ -54,10 +59,11 @@ namespace SkySlider.Panels
 
             if (InputHandler.IsKeyPressed(Keys.Space))
             {
-                engine.AddRigidBody(new SphereBody(cam.Pos, cam.Dir * 40f, 1f, 0.1f));
+                engine.AddRigidBody(new SphereBody(cam.Pos, cam.Dir * 10f, 1f, 0.1f));
             }
 
-            cam.Update(g);
+            //cam.Update(g);
+            player.Update(g);
             engine.Update(g);
         }
 
@@ -70,11 +76,11 @@ namespace SkySlider.Panels
                 SphereBody sb = engine.GetBodies()[i] as SphereBody;
                 if (sb != null)
                 {
-                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), cam);
+                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam);
                 }
             }
 
-            map.DebugDraw(g, primBatch, cam);
+            map.DebugDraw(g, primBatch, player.Cam);
         }
     }
 }
