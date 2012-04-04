@@ -39,23 +39,10 @@ namespace SkySlider.Maps
 
         //Texture coordinates for blocks
 
-        static Vector2 frontStart = new Vector2(.333f, .5f);
-        static Vector2 frontEnd = new Vector2(.667f, 1f);
-
-        static Vector2 rightStart = new Vector2(.667f, .5f);
-        static Vector2 rightEnd = new Vector2(1, 1);
-
-        static Vector2 leftStart = new Vector2(0, .5f);
-        static Vector2 leftEnd = new Vector2(.333f, 1f);
-
-        static Vector2 topStart = new Vector2(.333f, 0);
-        static Vector2 topEnd = new Vector2(.667f, 0.5f);
-
-        static Vector2 bottomStart = new Vector2(0, 0);
-        static Vector2 bottomEnd = new Vector2(.333f, 0.5f);
-
-        static Vector2 backStart = new Vector2(.667f, 0);
-        static Vector2 backEnd = new Vector2(1, 0.5f);
+        static Vector2[] front = new Vector2[4];
+        static Vector2[] left = new Vector2[4];
+        static Vector2[] top = new Vector2[4];
+        static Vector2[] bottom = new Vector2[4];
 
         /// <summary>
         /// Uses MeshBuilder to create a mesh for each block type, storing them into an array
@@ -64,6 +51,27 @@ namespace SkySlider.Maps
         /// <param name="content"></param>
         public static void Initialize(GraphicsDevice g, ContentManager content)
         {
+            front[0] = new Vector2(.5f, .5f);
+            front[1] = new Vector2(1, .5f);
+            front[2] = new Vector2(1, 1);
+            front[3] = new Vector2(.5f, 1);
+
+            left[0] = new Vector2(0, .5f);
+            left[1] = new Vector2(.5f, .5f);
+            left[2] = new Vector2(.5f, 1);
+            left[3] = new Vector2(0, 1);
+
+            top[0] = new Vector2(.5f, 0);
+            top[1] = new Vector2(1, 0);
+            top[2] = new Vector2(1, .5f);
+            top[3] = new Vector2(.5f, .5f);
+
+            bottom[0] = new Vector2(0, 0);
+            bottom[1] = new Vector2(.5f, 0);
+            bottom[2] = new Vector2(.5f, .5f);
+            bottom[3] = new Vector2(0, .5f);
+
+
             MeshBuilder mb = new MeshBuilder(g);
 
             blockMeshes = new Mesh[20];
@@ -171,17 +179,17 @@ namespace SkySlider.Maps
 
             mb.Begin();
             //front
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false, frontStart, frontEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false, front[0], front[1], front[2], front[3]);
             //left
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, leftStart, leftEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, left[0], left[1], left[2], left[3]);
             //back
-            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false, backStart, backEnd);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false, front[1], front[0], front[3], front[2]);
             //right
-            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false, rightStart, rightEnd);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false, left[1], left[0], left[3], left[2]);
             //top
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false, topStart, topEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false, top[0], top[1], top[2], top[3]);
             //bottom
-            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, bottomStart, bottomEnd);
+            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, bottom[0], bottom[1], bottom[2], bottom[3]);
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block1");
@@ -195,30 +203,32 @@ namespace SkySlider.Maps
             float height = 0.5f;
             float depth = 1f;
 
-            frontStart.Y = (frontStart.Y - 1) / 2 + 1;
-            frontEnd.Y = (frontEnd.Y - 1) / 2 + 1;
-            leftStart.Y = (leftStart.Y - 1) / 2 + 1;
-            leftEnd.Y = (leftEnd.Y - 1) / 2 + 1;
-            backStart.Y = backStart.Y / 2 + 0.25f;
-            backEnd.Y = backEnd.Y / 2 + 0.25f;
-            rightStart.Y = (rightStart.Y - 1) / 2 + 1;
-            rightEnd.Y = (frontEnd.Y - 1) / 2 + 1;
+            Vector2[] localFront = new Vector2[4];
+            Vector2[] localLeft = new Vector2[4];
+            Array.Copy(front, localFront, localFront.Length);
+            Array.Copy(left, localLeft, localLeft.Length);
+
+            for (int i = 0; i < 2; i++)
+            {
+                localFront[i].Y = (front[i].Y - 1) / 2 + 1;
+                localLeft[i].Y = (left[i].Y - 1) / 2 + 1;
+            }
 
             mb.Begin();
             //front
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false, frontStart, frontEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false, localFront[0], localFront[1], localFront[2], localFront[3]);
             //left
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, leftStart, leftEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, localLeft[0], localLeft[1], localLeft[2], localLeft[3]);
             //back
-            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false, backStart, backEnd);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false, localFront[1], localFront[0], localFront[3], localFront[2]);
             //right
-            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false, rightStart, rightEnd);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false, localLeft[1], localLeft[0], localLeft[3], localLeft[2]);
             //top
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false, topStart, topEnd);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false, top[0], top[1], top[2], top[3]);
             //bottom
-            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, bottomStart, bottomEnd);
+            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, bottom[0], bottom[1], bottom[2], bottom[3]);
             mb.OffsetAllVerts(new Vector3(0, -0.25f, 0)); //Offset the verts, because the above code centers the tile over the wrong position
-            
+
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block2");
 
@@ -233,19 +243,22 @@ namespace SkySlider.Maps
 
             mb.Begin();
             //front
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), false, front[0], front[1], front[2], front[3]);
             //left
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, left[0], left[1], left[2], left[3]);
             //back
-            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), false, front[1], front[0], front[3], front[2]);
             //right
-            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), false, left[1], left[0], left[3], left[2]);
             //top
-            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), -(depth / 2)), new Vector3((width / 2), (height / 2), (depth / 2)), new Vector3(-(width / 2), (height / 2), (depth / 2)), false, top[0], top[1], top[2], top[3]);
             //bottom
-            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false);
+            mb.AddQuad(new Vector3(-(width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), (depth / 2)), new Vector3((width / 2), -(height / 2), -(depth / 2)), new Vector3(-(width / 2), -(height / 2), -(depth / 2)), false, bottom[0], bottom[1], bottom[2], bottom[3]);
             mb.OffsetAllVerts(new Vector3(0, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
-            return mb.End();
+            Mesh m = mb.End();
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block2");
+
+            return m;
         }
 
         private static Mesh BuildEighthBoxMesh(MeshBuilder mb, ContentManager c)
@@ -273,10 +286,11 @@ namespace SkySlider.Maps
 
         private static Mesh BuildConvexRamp(MeshBuilder mb, ContentManager c)
         {
+
             mb.Begin();
             //mb.AddQuad(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
-            mb.AddQuad(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f), false);
-            mb.AddQuad(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false);
+            mb.AddQuad(new Vector3(0.5f, 0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f), false, left[0], left[1], left[2], left[3]);
+            mb.AddQuad(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, -0.5f), false, left[0], left[1], left[2], left[3]);
 
             for (int i = 0; i < sphereIterations; i++)
             {
@@ -290,21 +304,24 @@ namespace SkySlider.Maps
                 Vector3 v3 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
                 Vector3 v4 = new Vector3(0, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
 
-                mb.AddQuad(v1, v2, v3, v4, true);
+                mb.AddQuad(v1, v2, v3, v4, true, new Vector2(0.5f, i * (0.5f / sphereIterations)), new Vector2(1, (i + 1) * (0.5f / sphereIterations)));
 
                 //Draw the two sides
                 v1 = new Vector3(1, 0, 0) + offset;
                 v2 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
                 v3 = new Vector3(1, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
 
-                mb.AddTriangle(v1, v2, v3, false);
+                mb.AddTriangle(v1, v2, v3, new Vector2(v1.X + 0.5f, v1.Y + 0.5f), new Vector2(v2.X + 0.5f, v2.Y + 0.5f), new Vector2(v3.X + 0.5f, v3.Y + 0.5f), false);
                 offset = new Vector3(-1, 0, 0);
-                mb.AddTriangle(v1+offset, v3+offset, v2+offset, false);
+                mb.AddTriangle(v1 + offset, v3 + offset, v2 + offset, new Vector2(v1.X + 0.5f, v1.Y + 0.5f), new Vector2(v2.X + 0.5f, v2.Y + 0.5f), new Vector2(v3.X + 0.5f, v3.Y + 0.5f), false);
             }
 
             mb.RotateAllVerts(Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2));
 
-            return mb.End();
+            Mesh m = mb.End();
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+
+            return m;
         }
 
         private static Mesh BuildSlope1Ramp(MeshBuilder mb, ContentManager content)
