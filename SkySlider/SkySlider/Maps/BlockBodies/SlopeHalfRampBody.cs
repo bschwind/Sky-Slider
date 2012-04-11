@@ -37,7 +37,7 @@ namespace SkySlider.Maps.BlockBodies
                 }
                 else
                 {
-                    pa.X = (c.Pos.X + ((c.Pos.Y + 0.25f) / slope)) / 2;
+                    pa.X = ((c.Pos.X / slope) + 0.25f + c.Pos.Y) / (slope + (1 / slope));
                     pa.Y = (-1f / slope) * (pa.X - c.Pos.X) + c.Pos.Y;
                     pa.Z = c.Pos.Z;
 

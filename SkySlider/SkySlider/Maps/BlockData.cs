@@ -104,6 +104,7 @@ namespace SkySlider.Maps
             blockBodies[7] = new Slope2RampBody();
             blockBodies[8] = new SlopeHalfRampBody();
             blockBodies[9] = new ConcaveRampBody();
+            blockBodies[10] = new Slope2BaseBody();
         }
 
         private static void BuildRotations()
