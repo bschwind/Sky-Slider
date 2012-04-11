@@ -311,9 +311,19 @@ namespace SkySlider.Maps
                 v2 = new Vector3(1, (float)Math.Cos(nextAngle), (float)Math.Sin(nextAngle)) + offset;
                 v3 = new Vector3(1, (float)Math.Cos(angle), (float)Math.Sin(angle)) + offset;
 
-                mb.AddTriangle(v1, v2, v3, new Vector2(v1.X + 0.5f, v1.Y + 0.5f), new Vector2(v2.X + 0.5f, v2.Y + 0.5f), new Vector2(v3.X + 0.5f, v3.Y + 0.5f), false);
+                //calculate texture coordinates
+                Vector2 v1Tex = new Vector2(v1.Z + .5f, -v1.Y + .5f);
+                Vector2 v2Tex = new Vector2(v2.Z + .5f, -v2.Y + .5f);
+                Vector2 v3Tex = new Vector2(v3.Z + .5f, -v3.Y + .5f);
+                v1Tex /= 2;
+                v2Tex /= 2;
+                v3Tex /= 2;
+
+                //add back side
+                mb.AddTriangle(v1, v2, v3, new Vector2(v1Tex.X + .5f, v1Tex.Y + .5f), new Vector2(v2Tex.X + .5f, v2Tex.Y + .5f), new Vector2(v3Tex.X + .5f, v3Tex.Y + .5f), false);
                 offset = new Vector3(-1, 0, 0);
-                mb.AddTriangle(v1 + offset, v3 + offset, v2 + offset, new Vector2(v1.X + 0.5f, v1.Y + 0.5f), new Vector2(v2.X + 0.5f, v2.Y + 0.5f), new Vector2(v3.X + 0.5f, v3.Y + 0.5f), false);
+                //add front side
+                mb.AddTriangle(v1 + offset, v3 + offset, v2 + offset, new Vector2(v1Tex.X + .5f, v1Tex.Y + .5f), new Vector2(v3Tex.X + .5f, v3Tex.Y + .5f), new Vector2(v2Tex.X + .5f, v2Tex.Y + .5f), false);
             }
 
             mb.RotateAllVerts(Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2));
