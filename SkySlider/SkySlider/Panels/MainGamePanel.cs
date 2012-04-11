@@ -11,6 +11,7 @@ using GraphicsToolkit.Physics._3D;
 using GraphicsToolkit.Physics._3D.Partitions;
 using GraphicsToolkit.Physics._3D.Bodies;
 using SkySlider.Maps;
+using SkySlider.Players;
 
 namespace SkySlider.Panels
 {
@@ -59,10 +60,10 @@ namespace SkySlider.Panels
 
             if (InputHandler.IsKeyPressed(Keys.Space))
             {
-                engine.AddRigidBody(new SphereBody(cam.Pos, cam.Dir * 10f, 1f, 0.1f));
+                engine.AddRigidBody(new SphereBody(cam.Pos, cam.Dir * 2f, 1f, 0.1f));
             }
 
-            //cam.Update(g);
+     //       cam.Update(g);
             player.Update(g);
             engine.Update(g);
         }
