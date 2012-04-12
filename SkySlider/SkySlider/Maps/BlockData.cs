@@ -362,7 +362,7 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false, bottom[0], bottom[1], bottom[2], bottom[3]);
             
             Mesh m = mb.End();
-            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block6");
 
             return m;
         }
@@ -390,7 +390,7 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(0, -(heightHalf), (depthHalf)), new Vector3((0), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false, bottom[0], bottom[1] - new Vector2(.25f, 0), bottom[2] - new Vector2(.25f, 0), bottom[3]);
 
             Mesh m = mb.End();
-            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block7");
 
             return m;
         }
@@ -461,7 +461,7 @@ namespace SkySlider.Maps
             mb.RotateAllVerts(Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2));
 
             Mesh m = mb.End();
-            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block9");
 
             return m;
         }
@@ -491,7 +491,7 @@ namespace SkySlider.Maps
             mb.AddQuad(new Vector3(-widthHalf, -(heightHalf), (depthHalf)), new Vector3(widthHalf, -(heightHalf), (depthHalf)), new Vector3((widthHalf), -(heightHalf), -(depthHalf)), new Vector3(-(widthHalf), -(heightHalf), -(depthHalf)), false, bottom[0], bottom[1], bottom[2], bottom[3]);
 
             Mesh m = mb.End();
-            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+            m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block10");
 
             return m;
         }
