@@ -29,7 +29,7 @@ namespace SkySlider.Maps.BlockBodies
                 Vector3 pa = new Vector3();
                 float slope = -2f;
 
-                if (c.Pos.Y < ((slope * c.Pos.X) -0.25f)) //if the point is under the line
+                if (c.Pos.Y < ((slope * c.Pos.X) - 0.5f)) //if the point is under the line
                 {
                     pa.X = MathHelper.Clamp(c.Pos.X, -0.5f, 0f);
                     pa.Y = MathHelper.Clamp(c.Pos.Y, -0.5f, 0.5f);
@@ -37,7 +37,7 @@ namespace SkySlider.Maps.BlockBodies
                 }
                 else
                 {
-                    pa.X = ((c.Pos.X / slope) + 0.25f + c.Pos.Y) / (slope + (1 / slope));
+                    pa.X = ((c.Pos.X / slope) + 0.5f + c.Pos.Y) / (slope + (1 / slope));
                     pa.Y = (-1f / slope) * (pa.X - c.Pos.X) + c.Pos.Y;
                     pa.Z = c.Pos.Z;
 
