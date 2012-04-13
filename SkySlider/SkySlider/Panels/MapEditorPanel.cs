@@ -40,6 +40,8 @@ namespace SkySlider.Panels
         private Block placeBlock = new Block();
         private Vector3 placePos;
         private LinkedList<Vector3> startEndMarkers = new LinkedList<Vector3>();
+        private byte rot;
+        private byte axis;
         
 
         public MapEditorPanel()
@@ -90,6 +92,8 @@ namespace SkySlider.Panels
                 //if (map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z).Type == 0)
                 //{
                     placeBlock.Type = placeType;
+                    placeBlock.RotationAxis = axis;
+                    placeBlock.Rotation = rot;
                     map.SetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z, placeBlock);
                 //}
                 //else
@@ -115,7 +119,7 @@ namespace SkySlider.Panels
             if (InputHandler.IsNewKeyPress(Keys.Left))
             {
                 Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
-                byte axis = b.RotationAxis;
+                axis = b.RotationAxis;
                 axis += 1;
                 axis %= 6;
                 b.RotationAxis = axis;
@@ -125,7 +129,7 @@ namespace SkySlider.Panels
             if (InputHandler.IsNewKeyPress(Keys.Right))
             {
                 Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
-                byte axis = b.RotationAxis;
+                axis = b.RotationAxis;
                 if (axis == 0)
                 {
                     axis = 5;
@@ -141,7 +145,7 @@ namespace SkySlider.Panels
             if (InputHandler.IsNewKeyPress(Keys.Up))
             {
                 Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
-                byte rot = b.Rotation;
+                rot = b.Rotation;
                 rot += 1;
                 rot %= 4;
                 b.Rotation = rot;
@@ -151,7 +155,7 @@ namespace SkySlider.Panels
             if (InputHandler.IsNewKeyPress(Keys.Down))
             {
                 Block b = map.GetBlockAt((int)placePos.X, (int)placePos.Y, (int)placePos.Z);
-                byte rot = b.Rotation;
+                rot = b.Rotation;
                 if (rot == 0)
                 {
                     rot = 3;
