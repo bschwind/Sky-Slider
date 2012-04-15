@@ -89,8 +89,7 @@ namespace SkySlider.Maps
         {
             if (!File.Exists(dataDirectory))
             {
-                FileStream fs = File.Create(dataDirectory);
-                fs.Close();
+                throw new Exception("Map file not found!");
             }
             StreamReader sr = new StreamReader(dataDirectory);
             string widthHeightDepthString = sr.ReadLine();
