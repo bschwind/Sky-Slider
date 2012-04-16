@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.Graphics;
+using GraphicsToolkit.Physics._3D.Geometry;
 using System.IO;
 
 namespace SkySlider.Maps
@@ -179,8 +180,85 @@ namespace SkySlider.Maps
                         {
                             continue;
                         }
-
+                        
                         batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws each block, makes blocks between camera and player translucent
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="batch"></param>
+        /// <param name="cam"></param>
+        public void DebugDraw(GameTime g, PrimitiveBatch batch, ThirdPersonCamera cam)
+        {
+
+            Vector3 camPos = cam.Pos;
+            Vector3 playerPos = cam.TargetPos;
+            //Vector3 roundedPlayerPos = new Vector3((float)Math.Round(playerPos.X), (float)Math.Round(playerPos.Y), (float)Math.Round(playerPos.Z));
+            //Vector3 ray = camPos - playerPos;
+            //ray.Normalize();
+            //camPos += (camPos - playerPos) * 15f;
+            playerPos += (camPos - playerPos) * 0.1f;
+            //playerPos += (camPos - playerPos) * (roundedPlayerPos - playerPos);
+            //playerPos.X += (camPos.X - playerPos.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
+            //playerPos.Y += (camPos.Y - playerPos.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
+            //playerPos.Z += (camPos.Z - playerPos.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
+            //playerPos.X += (ray.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
+            //playerPos.Y += (ray.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
+            //playerPos.Z += (ray.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
+
+            AABB3D bounds = AABB3D.CreateFromPoints(new Vector3[] { camPos, playerPos });
+            //bounds.Inflate(0.2f);
+            Vector3 min = bounds.GetMin();
+            Vector3 max = bounds.GetMax();
+
+            int startRow = (int)min.X;
+            startRow = (int)Math.Max(startRow, 0);
+
+            int startCol = (int)min.Y;
+            startCol = (int)Math.Max(startCol, 0);
+
+            int startStack = (int)min.Z;
+            startStack = (int)Math.Max(startStack, 0);
+
+            int endRow = (int)max.X;
+            endRow = (int)Math.Min(endRow, width - 1);
+
+            int endCol = (int)max.Y;
+            endCol = (int)Math.Min(endCol, height - 1);
+
+            int endStack = (int)max.Z;
+            endStack = (int)Math.Min(endStack, depth - 1);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int z = 0; z < depth; z++)
+                    {
+                        byte type = blocks[x, y, z].Type;
+                        if (type == 0)
+                        {
+                            continue;
+                        }
+
+                        if ((x >= startRow) && (x <= endRow))
+                        {
+                            if ((y >= startCol) && (y <= endCol))
+                            {
+                                if ((z >= startStack) && (z <= endStack))
+                                {
+                                    batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, 0.5f);
+                                    continue;
+                                }
+                            }
+                        }
+
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
             }
