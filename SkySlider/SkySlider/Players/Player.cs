@@ -14,15 +14,13 @@ namespace SkySlider.Players
     {
         private ThirdPersonCamera cam;
         private SphereBody sphereBody;
-        private CharacterController controller;
         private float maxSpeed = 1.5f;
-        private float acceleration = 0.4f;
+        private float acceleration = 1.8f;
 
         public Player(Vector3 initialPlayerPosition)
         {
             cam = new ThirdPersonCamera(initialPlayerPosition, 1.4f, 1f);
             sphereBody = new SphereBody(initialPlayerPosition, Vector3.Zero, 1f, 0.18f);
-            controller = new CharacterController(sphereBody);
         }
 
         public ThirdPersonCamera Cam
@@ -55,7 +53,7 @@ namespace SkySlider.Players
             {
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
-                controller.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration);
                 sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
@@ -64,7 +62,7 @@ namespace SkySlider.Players
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
                 dir *= -1f;
-                controller.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration);
                 sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
@@ -72,7 +70,7 @@ namespace SkySlider.Players
             {
                 Vector3 dir = cam.Right;
                 dir.Normalize();
-                controller.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration);
                 sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
@@ -81,13 +79,13 @@ namespace SkySlider.Players
                 Vector3 dir = cam.Right;
                 dir.Normalize();
                 dir *= -1f;
-                controller.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration);
                 sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
             if (InputHandler.IsKeyPressed(Keys.Space))
             {
-                controller.AddForce(new Vector3(0f, 1f, 0f) * acceleration);
+                sphereBody.AddForce(new Vector3(0f, 1f, 0f) * acceleration);
                 sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
