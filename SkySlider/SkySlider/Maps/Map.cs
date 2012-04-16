@@ -21,10 +21,12 @@ namespace SkySlider.Maps
 
         private Block[, ,] blocks; //3D array of blocks
 
-        private List<Vector3> startEndMarkers = new List<Vector3>(); //list of Vector3s to be considered for start/end markers
+        private List<Vector3> objectiveVectors = new List<Vector3>(); //list of positions players must reach
         private Vector3 startLocation, endLocation; //start and end markers; get method will be needed.
         private int minManhattanDistance = 25; //minimum distance between start and end markers
         //start and end markers are only generated in the overloaded constructor.
+
+        private bool isTestMap = true;
 
         public int Width
         {
@@ -114,7 +116,7 @@ namespace SkySlider.Maps
                         blocks[x, y, z].RotationAxis = byte.Parse(blockDataString.Split(' ')[2]);
                         if (blockDataString.Split(' ').Length == 4) //if block is start/end marker...
                         {
-                            startEndMarkers.Add(new Vector3(x, y, z));
+                            objectiveVectors.Add(new Vector3(x, y, z));
    //                         blocks[x, y, z].Type = 9;
                         }
                     }
@@ -122,16 +124,21 @@ namespace SkySlider.Maps
             }
             sr.Close();
 
-            if (startEndMarkers.Count >= 2) //if there are sufficient start/end markers
+            if (objectiveVectors.Count > 0)
             {
-                generateMarkers(); //determine start/end positions
-                Block startMarker = new Block();
-                Block endMarker = new Block();
-                startMarker.Type = 8; //for debug purposes
-                endMarker.Type = 9;
-                SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
-                SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
+                isTestMap = false;
             }
+
+            //if (objectiveVectors.Count >= 2) //if there are sufficient start/end markers
+            //{
+            //    generateMarkers(); //determine start/end positions
+            //    Block startMarker = new Block();
+            //    Block endMarker = new Block();
+            //    startMarker.Type = 8; //for debug purposes
+            //    endMarker.Type = 9;
+            //    SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
+            //    SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
+            //}
 
 
         }
@@ -187,6 +194,7 @@ namespace SkySlider.Maps
             }
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Draws each block, makes blocks between camera and player translucent
         /// </summary>
@@ -265,39 +273,54 @@ namespace SkySlider.Maps
         }
 
         private void generateMarkers()
+=======
+        //private void generateMarkers()
+        //{
+        //    Random r = new Random();
+        //    int indexOffset = r.Next(0, objectiveVectors.Count);
+        //    bool isSuccessful = false;
+
+        //    for (int i = 0; i < objectiveVectors.Count; i++)
+        //    {
+        //        if (isSuccessful)
+        //        {
+        //            break;
+        //        }
+        //        startLocation = objectiveVectors.ElementAt((i + indexOffset) % objectiveVectors.Count);
+        //        for (int j = 0; j < objectiveVectors.Count; j++)
+        //        {
+        //            endLocation = objectiveVectors.ElementAt(j);
+        //            if (endLocation == startLocation)
+        //            {
+        //                continue;
+        //            }
+        //            if (Math.Abs(endLocation.X - startLocation.X) + Math.Abs(endLocation.Y - startLocation.Y) + Math.Abs(endLocation.Z - startLocation.Z) < minManhattanDistance)
+        //            {
+        //                continue;
+        //            }
+
+        //            //if below code is reached, the start/end combination are valid
+        //            isSuccessful = true;
+        //            break;
+        //        }
+        //    }
+        //    if (!isSuccessful)
+        //    {
+        //        throw new Exception("No valid start/end combinations.");
+        //    }
+        //}
+
+        public Vector3 getNextObjective(Vector3 previousObjective)
+>>>>>>> fecbf3112b36e8b6aeb1b02fbb3e1d8330483ee7
         {
+            objectiveVectors.Remove(previousObjective);
+            if (objectiveVectors.Count == 0) //no objectives left; game is over
+            {
+                //code for ending game?
+                return new Vector3(-1, -1, -1);
+            }
             Random r = new Random();
-            int indexOffset = r.Next(0, startEndMarkers.Count);
-            bool isSuccessful = false;
-
-            for (int i = 0; i < startEndMarkers.Count; i++)
-            {
-                if (isSuccessful)
-                {
-                    break;
-                }
-                startLocation = startEndMarkers.ElementAt((i + indexOffset) % startEndMarkers.Count);
-                for (int j = 0; j < startEndMarkers.Count; j++)
-                {
-                    endLocation = startEndMarkers.ElementAt(j);
-                    if (endLocation == startLocation)
-                    {
-                        continue;
-                    }
-                    if (Math.Abs(endLocation.X - startLocation.X) + Math.Abs(endLocation.Y - startLocation.Y) + Math.Abs(endLocation.Z - startLocation.Z) < minManhattanDistance)
-                    {
-                        continue;
-                    }
-
-                    //if below code is reached, the start/end combination are valid
-                    isSuccessful = true;
-                    break;
-                }
-            }
-            if (!isSuccessful)
-            {
-                throw new Exception("No valid start/end combinations.");
-            }
+            return objectiveVectors.ElementAt(r.Next(0, objectiveVectors.Count));
         }
     }
 }

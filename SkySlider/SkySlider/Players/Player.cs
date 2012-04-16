@@ -15,7 +15,8 @@ namespace SkySlider.Players
         private ThirdPersonCamera cam;
         private SphereBody sphereBody;
         private float maxSpeed = 1.5f;
-        private float acceleration = 1.8f;
+        private float acceleration = 0.1f;
+        private int score = 0;
 
         public Player(Vector3 initialPlayerPosition)
         {
@@ -41,10 +42,11 @@ namespace SkySlider.Players
 
         public void Update(GameTime g)
         {
-            UpdateKeyPresses(g);
 
+            UpdateKeyPresses(g);
             cam.TargetPos = sphereBody.Pos;
             cam.Update(g);
+            
         }
 
         private void UpdateKeyPresses(GameTime g)
@@ -54,7 +56,6 @@ namespace SkySlider.Players
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
                 sphereBody.AddForce(dir * acceleration);
-                sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
             if (InputHandler.IsKeyPressed(Keys.S))
@@ -63,7 +64,6 @@ namespace SkySlider.Players
                 dir.Normalize();
                 dir *= -1f;
                 sphereBody.AddForce(dir * acceleration);
-                sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
             if (InputHandler.IsKeyPressed(Keys.D))
@@ -71,7 +71,6 @@ namespace SkySlider.Players
                 Vector3 dir = cam.Right;
                 dir.Normalize();
                 sphereBody.AddForce(dir * acceleration);
-                sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
             if (InputHandler.IsKeyPressed(Keys.A))
@@ -80,15 +79,17 @@ namespace SkySlider.Players
                 dir.Normalize();
                 dir *= -1f;
                 sphereBody.AddForce(dir * acceleration);
-                sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
             }
 
             if (InputHandler.IsKeyPressed(Keys.Space))
             {
-                sphereBody.AddForce(new Vector3(0f, 1f, 0f) * acceleration);
-                sphereBody.Vel = Vector3.Clamp(sphereBody.Vel, -new Vector3(maxSpeed, maxSpeed, maxSpeed), new Vector3(maxSpeed, maxSpeed, maxSpeed));
+                sphereBody.AddForce(new Vector3(0f, 1f, 0f) * 0.4f);
             }
+        }
 
+        public void givePoint()
+        {
+            this.score++;
         }
     }
 }
