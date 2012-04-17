@@ -87,7 +87,10 @@ namespace SkySlider.Maps
                 }
             }
         }
-
+        /// <summary>
+        /// Loads a previously saved map file
+        /// </summary>
+        /// <param name="dataDirectory">Path to the map file</param>
         public Map(String dataDirectory)
         {
             if (!File.Exists(dataDirectory))
@@ -194,7 +197,6 @@ namespace SkySlider.Maps
             }
         }
 
-<<<<<<< HEAD
         /// <summary>
         /// Draws each block, makes blocks between camera and player translucent
         /// </summary>
@@ -203,24 +205,11 @@ namespace SkySlider.Maps
         /// <param name="cam"></param>
         public void DebugDraw(GameTime g, PrimitiveBatch batch, ThirdPersonCamera cam)
         {
-
+            //find out if block is between camera and player
             Vector3 camPos = cam.Pos;
             Vector3 playerPos = cam.TargetPos;
-            //Vector3 roundedPlayerPos = new Vector3((float)Math.Round(playerPos.X), (float)Math.Round(playerPos.Y), (float)Math.Round(playerPos.Z));
-            //Vector3 ray = camPos - playerPos;
-            //ray.Normalize();
-            //camPos += (camPos - playerPos) * 15f;
             playerPos += (camPos - playerPos) * 0.1f;
-            //playerPos += (camPos - playerPos) * (roundedPlayerPos - playerPos);
-            //playerPos.X += (camPos.X - playerPos.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
-            //playerPos.Y += (camPos.Y - playerPos.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
-            //playerPos.Z += (camPos.Z - playerPos.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
-            //playerPos.X += (ray.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
-            //playerPos.Y += (ray.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
-            //playerPos.Z += (ray.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
-
             AABB3D bounds = AABB3D.CreateFromPoints(new Vector3[] { camPos, playerPos });
-            //bounds.Inflate(0.2f);
             Vector3 min = bounds.GetMin();
             Vector3 max = bounds.GetMax();
 
@@ -260,20 +249,20 @@ namespace SkySlider.Maps
                             {
                                 if ((z >= startStack) && (z <= endStack))
                                 {
+                                    //block is between camera and player, so draw at 50% opacity
                                     batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, 0.5f);
                                     continue;
                                 }
                             }
                         }
-
+                        //block isn't between camera and player, so draw block normally
                         batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
             }
         }
 
-        private void generateMarkers()
-=======
+        //private void generateMarkers()
         //private void generateMarkers()
         //{
         //    Random r = new Random();
@@ -311,7 +300,6 @@ namespace SkySlider.Maps
         //}
 
         public Vector3 getNextObjective(Vector3 previousObjective)
->>>>>>> fecbf3112b36e8b6aeb1b02fbb3e1d8330483ee7
         {
             objectiveVectors.Remove(previousObjective);
             if (objectiveVectors.Count == 0) //no objectives left; game is over

@@ -40,22 +40,22 @@ namespace SkySlider.Panels
 
             BlockData.Initialize(Device, content);
 
-            cam = new FirstPersonCamera(0.5f, 10);
-            cam.Pos = new Vector3(3, 3, 13);
+            //cam = new FirstPersonCamera(0.5f, 10);
+            //cam.Pos = new Vector3(3, 3, 13);
 
-            map = new Map("Level1-1.txt");
+            map = new Map("Content/Levels/Level1-1.txt"); //load map
             objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
 
             partition = new MapPartition(map);
 
-            player = new Player(new Vector3(5,5,5));
+            player = new Player(new Vector3(5,5,5)); //spawn player
 
             engine = new PhysicsEngine3D(partition);
-            engine.AddRigidBody(player.Body);
+            engine.AddRigidBody(player.Body); //physics body of player
 
             MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
-            box = mb.CreateBox(0.25f, 0.25f, 0.25f);
+            box = mb.CreateBox(0.25f, 0.25f, 0.25f); //box to draw at objective
 
             primBatch = new PrimitiveBatch(Device);
         }
@@ -68,7 +68,10 @@ namespace SkySlider.Panels
             updateObjective(g);
             
         }
-
+        /// <summary>
+        /// If the current objective has been reached, change the objective
+        /// </summary>
+        /// <param name="g"></param>
         private void updateObjective(GameTime g)
         {
             if (((int)player.Body.Pos.X == objectiveLocation.X) &&
@@ -85,7 +88,7 @@ namespace SkySlider.Panels
         public override void Draw(GameTime g)
         {
             base.Draw(g);
-
+            //draw spheres
             for (int i = 0; i < engine.GetBodies().Count; i++)
             {
                 SphereBody sb = engine.GetBodies()[i] as SphereBody;
@@ -94,9 +97,10 @@ namespace SkySlider.Panels
                     primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam);
                 }
             }
-
+            //Draw box at objective
             primBatch.DrawMesh(box, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
 
+            //Draw waypoint pointing to next objective
             Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
             playerToObjective.Normalize();
             Vector3 tipPos = player.Body.Pos + 0.5f * playerToObjective;
