@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.Graphics;
+using GraphicsToolkit.Physics._3D.Geometry;
 using System.IO;
 
 namespace SkySlider.Maps
@@ -20,10 +21,12 @@ namespace SkySlider.Maps
 
         private Block[, ,] blocks; //3D array of blocks
 
-        private List<Vector3> startEndMarkers = new List<Vector3>(); //list of Vector3s to be considered for start/end markers
+        private List<Vector3> objectiveVectors = new List<Vector3>(); //list of positions players must reach
         private Vector3 startLocation, endLocation; //start and end markers; get method will be needed.
         private int minManhattanDistance = 25; //minimum distance between start and end markers
         //start and end markers are only generated in the overloaded constructor.
+
+        private bool isTestMap = true;
 
         public int Width
         {
@@ -113,7 +116,7 @@ namespace SkySlider.Maps
                         blocks[x, y, z].RotationAxis = byte.Parse(blockDataString.Split(' ')[2]);
                         if (blockDataString.Split(' ').Length == 4) //if block is start/end marker...
                         {
-                            startEndMarkers.Add(new Vector3(x, y, z));
+                            objectiveVectors.Add(new Vector3(x, y, z));
    //                         blocks[x, y, z].Type = 9;
                         }
                     }
@@ -121,16 +124,21 @@ namespace SkySlider.Maps
             }
             sr.Close();
 
-            if (startEndMarkers.Count >= 2) //if there are sufficient start/end markers
+            if (objectiveVectors.Count > 0)
             {
-                generateMarkers(); //determine start/end positions
-                Block startMarker = new Block();
-                Block endMarker = new Block();
-                startMarker.Type = 8; //for debug purposes
-                endMarker.Type = 9;
-                SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
-                SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
+                isTestMap = false;
             }
+
+            //if (objectiveVectors.Count >= 2) //if there are sufficient start/end markers
+            //{
+            //    generateMarkers(); //determine start/end positions
+            //    Block startMarker = new Block();
+            //    Block endMarker = new Block();
+            //    startMarker.Type = 8; //for debug purposes
+            //    endMarker.Type = 9;
+            //    SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
+            //    SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
+            //}
 
 
         }
@@ -179,47 +187,140 @@ namespace SkySlider.Maps
                         {
                             continue;
                         }
-
+                        
                         batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
             }
         }
 
-        private void generateMarkers()
+<<<<<<< HEAD
+        /// <summary>
+        /// Draws each block, makes blocks between camera and player translucent
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="batch"></param>
+        /// <param name="cam"></param>
+        public void DebugDraw(GameTime g, PrimitiveBatch batch, ThirdPersonCamera cam)
         {
+
+            Vector3 camPos = cam.Pos;
+            Vector3 playerPos = cam.TargetPos;
+            //Vector3 roundedPlayerPos = new Vector3((float)Math.Round(playerPos.X), (float)Math.Round(playerPos.Y), (float)Math.Round(playerPos.Z));
+            //Vector3 ray = camPos - playerPos;
+            //ray.Normalize();
+            //camPos += (camPos - playerPos) * 15f;
+            playerPos += (camPos - playerPos) * 0.1f;
+            //playerPos += (camPos - playerPos) * (roundedPlayerPos - playerPos);
+            //playerPos.X += (camPos.X - playerPos.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
+            //playerPos.Y += (camPos.Y - playerPos.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
+            //playerPos.Z += (camPos.Z - playerPos.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
+            //playerPos.X += (ray.X) * Math.Abs(roundedPlayerPos.X - playerPos.X) * 2f;
+            //playerPos.Y += (ray.Y) * Math.Abs(roundedPlayerPos.Y - playerPos.Y) * 2f;
+            //playerPos.Z += (ray.Z) * Math.Abs(roundedPlayerPos.Z - playerPos.Z) * 2f;
+
+            AABB3D bounds = AABB3D.CreateFromPoints(new Vector3[] { camPos, playerPos });
+            //bounds.Inflate(0.2f);
+            Vector3 min = bounds.GetMin();
+            Vector3 max = bounds.GetMax();
+
+            int startRow = (int)min.X;
+            startRow = (int)Math.Max(startRow, 0);
+
+            int startCol = (int)min.Y;
+            startCol = (int)Math.Max(startCol, 0);
+
+            int startStack = (int)min.Z;
+            startStack = (int)Math.Max(startStack, 0);
+
+            int endRow = (int)max.X;
+            endRow = (int)Math.Min(endRow, width - 1);
+
+            int endCol = (int)max.Y;
+            endCol = (int)Math.Min(endCol, height - 1);
+
+            int endStack = (int)max.Z;
+            endStack = (int)Math.Min(endStack, depth - 1);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int z = 0; z < depth; z++)
+                    {
+                        byte type = blocks[x, y, z].Type;
+                        if (type == 0)
+                        {
+                            continue;
+                        }
+
+                        if ((x >= startRow) && (x <= endRow))
+                        {
+                            if ((y >= startCol) && (y <= endCol))
+                            {
+                                if ((z >= startStack) && (z <= endStack))
+                                {
+                                    batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, 0.5f);
+                                    continue;
+                                }
+                            }
+                        }
+
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                    }
+                }
+            }
+        }
+
+        private void generateMarkers()
+=======
+        //private void generateMarkers()
+        //{
+        //    Random r = new Random();
+        //    int indexOffset = r.Next(0, objectiveVectors.Count);
+        //    bool isSuccessful = false;
+
+        //    for (int i = 0; i < objectiveVectors.Count; i++)
+        //    {
+        //        if (isSuccessful)
+        //        {
+        //            break;
+        //        }
+        //        startLocation = objectiveVectors.ElementAt((i + indexOffset) % objectiveVectors.Count);
+        //        for (int j = 0; j < objectiveVectors.Count; j++)
+        //        {
+        //            endLocation = objectiveVectors.ElementAt(j);
+        //            if (endLocation == startLocation)
+        //            {
+        //                continue;
+        //            }
+        //            if (Math.Abs(endLocation.X - startLocation.X) + Math.Abs(endLocation.Y - startLocation.Y) + Math.Abs(endLocation.Z - startLocation.Z) < minManhattanDistance)
+        //            {
+        //                continue;
+        //            }
+
+        //            //if below code is reached, the start/end combination are valid
+        //            isSuccessful = true;
+        //            break;
+        //        }
+        //    }
+        //    if (!isSuccessful)
+        //    {
+        //        throw new Exception("No valid start/end combinations.");
+        //    }
+        //}
+
+        public Vector3 getNextObjective(Vector3 previousObjective)
+>>>>>>> fecbf3112b36e8b6aeb1b02fbb3e1d8330483ee7
+        {
+            objectiveVectors.Remove(previousObjective);
+            if (objectiveVectors.Count == 0) //no objectives left; game is over
+            {
+                //code for ending game?
+                return new Vector3(-1, -1, -1);
+            }
             Random r = new Random();
-            int indexOffset = r.Next(0, startEndMarkers.Count);
-            bool isSuccessful = false;
-
-            for (int i = 0; i < startEndMarkers.Count; i++)
-            {
-                if (isSuccessful)
-                {
-                    break;
-                }
-                startLocation = startEndMarkers.ElementAt((i + indexOffset) % startEndMarkers.Count);
-                for (int j = 0; j < startEndMarkers.Count; j++)
-                {
-                    endLocation = startEndMarkers.ElementAt(j);
-                    if (endLocation == startLocation)
-                    {
-                        continue;
-                    }
-                    if (Math.Abs(endLocation.X - startLocation.X) + Math.Abs(endLocation.Y - startLocation.Y) + Math.Abs(endLocation.Z - startLocation.Z) < minManhattanDistance)
-                    {
-                        continue;
-                    }
-
-                    //if below code is reached, the start/end combination are valid
-                    isSuccessful = true;
-                    break;
-                }
-            }
-            if (!isSuccessful)
-            {
-                throw new Exception("No valid start/end combinations.");
-            }
+            return objectiveVectors.ElementAt(r.Next(0, objectiveVectors.Count));
         }
     }
 }

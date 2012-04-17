@@ -34,7 +34,7 @@ namespace SkySlider
             Components.Add(new InputHandler(this));
 
             gManager = new GUIManager(this, graphics);
-            gManager.AddPanel(new MapEditorPanel());
+            gManager.AddPanel(new MainGamePanel());
             Components.Add(gManager);
         }
 
