@@ -10,8 +10,10 @@ using GraphicsToolkit.Input;
 using GraphicsToolkit.Physics._3D;
 using GraphicsToolkit.Physics._3D.Partitions;
 using GraphicsToolkit.Physics._3D.Bodies;
+using GraphicsToolkit.Networking;
 using SkySlider.Maps;
 using SkySlider.Players;
+using SkySlider.Networking;
 
 namespace SkySlider.Panels
 {
@@ -27,11 +29,67 @@ namespace SkySlider.Panels
         private Player player;
 
         private Vector3 objectiveLocation; //block players must reach
+
+        //Networking Code
+        private Dictionary<string, RemotePlayer> remotePlayers;
+        private string localPlayerName;
+        private Client client;
+        private bool singleplayer = false;
+        private ASCIIEncoding encoder = new ASCIIEncoding();
+        private int frameSkip = 5;
+        private int currentFrame = 0;
         
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
+            remotePlayers = new Dictionary<string, RemotePlayer>();
+            client = new Client();
+            client.OnDataReceived += new ClientHandlePacketData(client_OnDataReceived);
+            try
+            {
+                client.ConnectToServer("localhost", 16645);
+                singleplayer = false;
+            }
+            catch
+            {
+                Console.WriteLine("Could not connect to server, initiating single player mode");
+                singleplayer = true;
+            }
 
+            if (!singleplayer)
+            {
+                Random rand = new Random();
+                localPlayerName = "Brian" + rand.Next(0, 500);
+                NetworkSender.SendNewPlayerToServer(localPlayerName, client);
+            }
+        }
+
+        void client_OnDataReceived(byte[] data, int bytesRead)
+        {
+            byte protocolByte = data[0];
+            ServerToClientProtocol protocol = (ServerToClientProtocol)protocolByte;
+
+            switch (protocol)
+            {
+                case ServerToClientProtocol.NewClientConnected:
+                    string name = encoder.GetString(data, 1, bytesRead - 1);
+                    Console.WriteLine("New client connected: " + name);
+                    remotePlayers.Add(name, new RemotePlayer());
+                    break;
+                case ServerToClientProtocol.ClientPositionUpdated:
+                    byte nameLength = data[1];
+                    name = encoder.GetString(data, 1, nameLength);
+                    float x = BitConverter.ToSingle(data, 2 + nameLength);
+                    float y = BitConverter.ToSingle(data, 2 + sizeof(float) + nameLength);
+                    float z = BitConverter.ToSingle(data, 2 + (2*sizeof(float)) + nameLength);
+
+                    Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
+                    remotePlayers[name].Position = new Vector3(x, y, z);
+                    break;
+                case ServerToClientProtocol.ClientDisconnected:
+
+                    break;
+            }
         }
 
         public override void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -63,10 +121,28 @@ namespace SkySlider.Panels
         public override void Update(GameTime g)
         {
             base.Update(g);
+
+            if (InputHandler.IsKeyPressed(Keys.Escape))
+            {
+                ExitDesired = true;
+                if (!singleplayer)
+                {
+                    NetworkSender.Disconnect(localPlayerName, client);
+                    client.Disconnect();
+                }
+            }
+
             player.Update(g);
             engine.Update(g);
             updateObjective(g);
-            
+
+            currentFrame++;
+            if (currentFrame > frameSkip)
+            {
+                currentFrame = 0;
+                //Send updated position
+                NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
+            }
         }
         /// <summary>
         /// If the current objective has been reached, change the objective
@@ -97,6 +173,13 @@ namespace SkySlider.Panels
                     primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam);
                 }
             }
+
+            //Draw remote players
+            foreach (RemotePlayer p in remotePlayers.Values)
+            {
+                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam);
+            }
+
             //Draw box at objective
             primBatch.DrawMesh(box, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
 

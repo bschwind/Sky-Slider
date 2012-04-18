@@ -55,11 +55,6 @@ namespace SkySlider
 
         protected override void Update(GameTime gameTime)
         {
-            if (InputHandler.IsNewKeyPress(Keys.Escape))
-            {
-                Exit();
-            }
-
             base.Update(gameTime);
         }
 
