@@ -51,11 +51,29 @@ namespace SkySlider.Players
 
         private void UpdateKeyPresses(GameTime g)
         {
+            float inAirAccelerationFactor;
+
+            Vector3 damping = this.sphereBody.Vel * 0.002f;
+            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
+            {
+                damping = this.sphereBody.Vel * 0.05f; //increase damping if no keys are pressed
+            }
+            damping *= new Vector3(1f, 0f, 1f); //damping should only be in the x and z directions
+
+            if (sphereBody.InContact) 
+            {
+                inAirAccelerationFactor = 1f;
+            }
+            else
+            {
+                 inAirAccelerationFactor = 0.5f; //if character is in the air, reduce mobility
+            }
+
             if (InputHandler.IsKeyPressed(Keys.W))
             {
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
-                sphereBody.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.S))
@@ -63,14 +81,14 @@ namespace SkySlider.Players
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
                 dir *= -1f;
-                sphereBody.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.D))
             {
                 Vector3 dir = cam.Right;
                 dir.Normalize();
-                sphereBody.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.A))
@@ -78,13 +96,17 @@ namespace SkySlider.Players
                 Vector3 dir = cam.Right;
                 dir.Normalize();
                 dir *= -1f;
-                sphereBody.AddForce(dir * acceleration);
+                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
             }
 
-            if (InputHandler.IsKeyPressed(Keys.Space))
+            if (InputHandler.IsKeyPressed(Keys.Space) && sphereBody.InContact && (sphereBody.Normal.Y >= 0))
             {
-                sphereBody.AddForce(new Vector3(0f, 1f, 0f) * 0.4f);
+                    Vector3 dir = sphereBody.Normal;
+                    dir *= new Vector3(1f, 0, 1f);
+                    sphereBody.AddForce(dir * 2f + new Vector3(0, 3f, 0));
             }
+
+            sphereBody.AddForce(-damping);
         }
 
         public void givePoint()

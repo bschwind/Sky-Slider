@@ -304,7 +304,6 @@ namespace SkySlider.Maps
             objectiveVectors.Remove(previousObjective);
             if (objectiveVectors.Count == 0) //no objectives left; game is over
             {
-                //code for ending game?
                 return new Vector3(-1, -1, -1);
             }
             Random r = new Random();

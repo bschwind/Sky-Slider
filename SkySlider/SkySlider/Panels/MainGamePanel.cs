@@ -51,6 +51,7 @@ namespace SkySlider.Panels
             player = new Player(new Vector3(5,5,5)); //spawn player
 
             engine = new PhysicsEngine3D(partition);
+            engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
 
             MeshBuilder mb = new MeshBuilder(Device);
@@ -66,6 +67,11 @@ namespace SkySlider.Panels
             player.Update(g);
             engine.Update(g);
             updateObjective(g);
+            if (objectiveLocation == new Vector3(-1, -1, -1))
+            {
+                //game-over code goes here
+            }
+
             
         }
         /// <summary>
