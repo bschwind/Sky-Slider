@@ -17,7 +17,7 @@ namespace SkySlider.Players
         private float airTime = 0.15f;
         private float currentAirTime = 0f;
         private bool canJump, falling, clinging;
-        private Vector3 verticalJumpForce = new Vector3(0, 0.6f, 0);
+        private Vector3 verticalJumpForce = new Vector3(0, 0.65f, 0);
 
         private float acceleration = 0.1f;
         private int score = 0;
@@ -46,7 +46,7 @@ namespace SkySlider.Players
 
         public void Update(GameTime g)
         {
-            if ((sphereBody.InContact && (sphereBody.Normal.Y >= 0)) || clinging) //touching ground or clinging to wall
+            if ((sphereBody.InContact && (sphereBody.Normal.Y > 0.01f)) || clinging) //touching ground or clinging to wall
             {
                 canJump = true;
                 falling = false;
@@ -154,15 +154,22 @@ namespace SkySlider.Players
             if (((sphereBody.InContact) && ((Math.Abs(sphereBody.Normal.X) >= 0.97f) || (Math.Abs(sphereBody.Normal.Z) >= 0.97f))) || clinging)
             {
                 intendedDirection.Normalize();
-                if ((Math.Abs(Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.9f) || clinging) //player is pushing against wall
+                if ((Math.Abs(Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f) || clinging) //player is pushing against wall
                 {
-                    clinging = true;
-                    falling = false;
-                    sphereBody.Vel = sphereBody.Vel * new Vector3(0, 0, 0);
-                    sphereBody.AddForce(new Vector3(0, 0.01f, 0));
+                    if ((sphereBody.Vel.Y < -0.05) || clinging)//if moving downward, start clinging
+                    {
+                        clinging = true;
+                        falling = false;
+                        sphereBody.Vel = sphereBody.Vel * new Vector3(0, 0, 0);
+                        sphereBody.AddForce(new Vector3(0, 0.01f, 0));
+                    }
+                    else //if moving upward, don't cling yet
+                    {
+                        clinging = false;
+                    }
                 }
 
-                if ((Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.9f)
+                if ((Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f)
                 {
                     //stop clinging is player is pushing away
                     clinging = false;
