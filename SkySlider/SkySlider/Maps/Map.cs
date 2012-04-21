@@ -231,6 +231,8 @@ namespace SkySlider.Maps
             int endStack = (int)max.Z;
             endStack = (int)Math.Min(endStack, depth - 1);
 
+            List<int[]> translucentBlocks = new List<int[]>();
+
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -249,8 +251,9 @@ namespace SkySlider.Maps
                             {
                                 if ((z >= startStack) && (z <= endStack))
                                 {
-                                    //block is between camera and player, so draw at 50% opacity
-                                    batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, 0.5f);
+                                    //block is between camera and player, so store it for drawing later
+                                    translucentBlocks.Add(new int[3]{x, y, z});
+                                    //batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, 0.5f);
                                     continue;
                                 }
                             }
@@ -260,7 +263,12 @@ namespace SkySlider.Maps
                     }
                 }
             }
+            foreach (int[] coords in translucentBlocks)//draw translucent blocks that are between player and camera
+            {
+                batch.DrawMesh(BlockData.GetMeshFromID(blocks[coords[0], coords[1], coords[2]].Type), BlockData.GetRotationMatrix(blocks[coords[0], coords[1], coords[2]]) * Matrix.CreateTranslation(new Vector3(coords[0] + 0.5f, coords[1] + 0.5f, coords[2] + 0.5f)), cam, 0.6f);
+            }
         }
+
 
         //private void generateMarkers()
         //private void generateMarkers()

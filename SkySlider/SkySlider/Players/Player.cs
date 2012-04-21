@@ -46,7 +46,7 @@ namespace SkySlider.Players
 
         public void Update(GameTime g)
         {
-            if ((sphereBody.InContact && (sphereBody.Normal.Y > 0.01f)) || clinging) //touching ground or clinging to wall
+            if ((sphereBody.InContact && (sphereBody.Normal.Y > 0.1f)) || clinging) //touching ground or clinging to wall
             {
                 canJump = true;
                 falling = false;
@@ -145,7 +145,7 @@ namespace SkySlider.Players
             {
                 Vector3 dir = sphereBody.Normal;
                 dir *= new Vector3(1f, 0, 1f);
-                sphereBody.AddForce(dir * 2f + verticalJumpForce);
+                sphereBody.AddForce(Vector3.Dot(dir, intendedDirection) * dir * .8f + dir * 2f + verticalJumpForce);
                 canJump = false;
                 clinging = false;
             }
@@ -156,7 +156,7 @@ namespace SkySlider.Players
                 intendedDirection.Normalize();
                 if ((Math.Abs(Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f) || clinging) //player is pushing against wall
                 {
-                    if ((sphereBody.Vel.Y < -0.05) || clinging)//if moving downward, start clinging
+                    if ((sphereBody.Vel.Y < -0.1) || clinging)//if moving downward, start clinging
                     {
                         clinging = true;
                         falling = false;
@@ -169,7 +169,7 @@ namespace SkySlider.Players
                     }
                 }
 
-                if ((Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f)
+                if ((Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0)
                 {
                     //stop clinging is player is pushing away
                     clinging = false;
