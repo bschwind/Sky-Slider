@@ -150,8 +150,7 @@ namespace SkySlider.Players
                 clinging = false;
             }
 
-
-            if (((sphereBody.InContact) && ((Math.Abs(sphereBody.Normal.X) >= 0.97f) || (Math.Abs(sphereBody.Normal.Z) >= 0.97f))) || clinging)
+            if (((sphereBody.InContact) && (Math.Abs(sphereBody.Normal.X) + Math.Abs(sphereBody.Normal.Z) >= 0.97f)) || clinging)
             {
                 intendedDirection.Normalize();
                 if ((Math.Abs(Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f) || clinging) //player is pushing against wall
