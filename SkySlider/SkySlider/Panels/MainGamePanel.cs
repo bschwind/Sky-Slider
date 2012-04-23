@@ -109,15 +109,21 @@ namespace SkySlider.Panels
             //cam.Pos = new Vector3(3, 3, 13);
 
             map = new Map("Content/Levels/Level1-1.txt"); //load map
+            
+
             objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
 
             partition = new MapPartition(map);
 
             player = new Player(new Vector3(5,5,5)); //spawn player
-
             engine = new PhysicsEngine3D(partition);
             engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
+            engine.AddRigidBody(new PlaneBody(Vector3.Up, new Vector3(0, 1f, 0)));
+            //engine.AddRigidBody(new PlaneBody(new Vector3(1f, 0, 0), new Vector3(1f, 0, 0)));
+            //engine.AddRigidBody(new PlaneBody(new Vector3(-1f, 0, 0), new Vector3(map.Width - 1, 0, 0)));
+            //engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, 1f), new Vector3(0, 0, 1f)));
+            //engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, -1f), new Vector3(0, 0, map.Depth - 1)));
 
             MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
