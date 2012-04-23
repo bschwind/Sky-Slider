@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.GUI;
 using GraphicsToolkit.Graphics;
 using GraphicsToolkit.Input;
@@ -24,11 +25,12 @@ namespace SkySlider.Panels
         private Map map;
         private FirstPersonCamera cam;
         private Mesh sphere;
-        private Mesh box;
+        private Mesh destination;
         private PrimitiveBatch primBatch;
         private Player player;
 
         private Vector3 objectiveLocation; //block players must reach
+        private Mesh box;
 
         //Networking Code
         private Dictionary<string, RemotePlayer> remotePlayers;
@@ -114,7 +116,8 @@ namespace SkySlider.Panels
 
             MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
-            box = mb.CreateBox(0.25f, 0.25f, 0.25f); //box to draw at objective
+            destination = mb.CreateSphere(0.5f, 12, 12); //box to draw at objective
+            destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
 
             primBatch = new PrimitiveBatch(Device);
         }
@@ -188,6 +191,8 @@ namespace SkySlider.Panels
 
             //Draw box at objective
             primBatch.DrawMesh(box, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
+            //Draw sphere at objective
+            primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
 
             //Draw waypoint pointing to next objective
             Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
@@ -200,8 +205,8 @@ namespace SkySlider.Panels
 
             primBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, player.Cam);
      //       primBatch.DrawLine(player.Body.Pos, objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f), Color.Aqua);
-            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), Color.BlanchedAlmond);
-            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), Color.BlanchedAlmond);
+            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
+            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
             primBatch.End();
 
             map.DebugDraw(g, primBatch, player.Cam);
