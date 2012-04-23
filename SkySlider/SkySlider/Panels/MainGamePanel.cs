@@ -38,7 +38,7 @@ namespace SkySlider.Panels
         private Client client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 5;
+        private int frameSkip = 0;
         private int currentFrame = 0;
         
         public MainGamePanel()
