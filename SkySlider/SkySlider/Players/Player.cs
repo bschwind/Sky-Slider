@@ -88,7 +88,7 @@ namespace SkySlider.Players
 
             if (clinging)
             {
-                accelerationFactor = 6f; //cannot move while clinging
+                //accelerationFactor = 6f; //cannot move while clinging
                 sphereBody.AddForce(-sphereBody.Normal * 0.01f);
             }
 

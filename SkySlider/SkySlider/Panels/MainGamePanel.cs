@@ -26,6 +26,7 @@ namespace SkySlider.Panels
         private FirstPersonCamera cam;
         private Mesh sphere;
         private Mesh destination;
+        private Mesh walls;
         private PrimitiveBatch primBatch;
         private Player player;
 
@@ -106,9 +107,24 @@ namespace SkySlider.Panels
             BlockData.Initialize(Device, content);
 
             //cam = new FirstPersonCamera(0.5f, 10);
-            //cam.Pos = new Vector3(3, 3, 13);
+            //cam.Pos = new Vector3(3, 3, 13)
 
             map = new Map("Content/Levels/Level1-1.txt"); //load map
+            MeshBuilder mb = new MeshBuilder(Device);
+            mb.Begin();
+            //add back wall
+            mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height, 1), new Vector3(map.Width - 1, 0, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            //add front wall
+            mb.AddQuad(new Vector3(map.Width - 1, map.Height, map.Depth - 1), new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), new Vector3(map.Width - 1, 0, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            //add left wall
+            mb.AddQuad(new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, map.Height - 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Depth, map.Height));
+            //add right wall
+            mb.AddQuad(new Vector3(map.Width - 1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height - 1, map.Depth - 1), new Vector3(map.Width - 1, 1, map.Depth - 1), new Vector3(map.Width - 1, 1, 1), false, Vector2.Zero, new Vector2(map.Depth, map.Height));
+            //add floor
+            mb.AddQuad(new Vector3(1, 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(map.Width - 1, 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Depth));
+            walls = mb.End();
+            walls.Texture = content.Load<Texture2D>("Textures/BlockTextures/Walls");
+
             objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
 
             partition = new MapPartition(map);
@@ -119,7 +135,6 @@ namespace SkySlider.Panels
             engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
 
-            MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
             destination = mb.CreateSphere(0.5f, 12, 12); //box to draw at objective
             destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
@@ -196,6 +211,9 @@ namespace SkySlider.Panels
             
             //Draw sphere at objective
             primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
+
+            //Draw walls
+            primBatch.DrawMesh(walls, Matrix.Identity, player.Cam);
 
             //Draw waypoint pointing to next objective
             Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
