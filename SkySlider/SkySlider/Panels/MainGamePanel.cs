@@ -28,6 +28,8 @@ namespace SkySlider.Panels
         private Mesh destination;
         private Mesh walls;
         private PrimitiveBatch primBatch;
+        private SpriteBatch sb;
+        private SpriteFont sf;
         private Player player;
 
         private Vector3 objectiveLocation; //block players must reach
@@ -40,11 +42,13 @@ namespace SkySlider.Panels
         private ASCIIEncoding encoder = new ASCIIEncoding();
         private int frameSkip = 5;
         private int currentFrame = 0;
+
+        private bool gameOver = false;
         
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = false;
+            singleplayer = true;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -170,7 +174,11 @@ namespace SkySlider.Panels
             destination = mb.CreateSphere(0.5f, 12, 12); //box to draw at objective
             destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
 
+
+            sb = new SpriteBatch(Device);
+            sf = content.Load<SpriteFont>("Fonts/Helvetica");
             primBatch = new PrimitiveBatch(Device);
+            
         }
 
         public override void Update(GameTime g)
@@ -201,7 +209,7 @@ namespace SkySlider.Panels
 
             if (objectiveLocation == new Vector3(-1, -1, -1))
             {
-                //game-over code goes here
+                gameOver = true;
             }
         }
         /// <summary>
@@ -256,12 +264,18 @@ namespace SkySlider.Panels
             Vector3 B = player.Body.Pos - 0.2f * tBase;
 
             primBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, player.Cam);
-     //       primBatch.DrawLine(player.Body.Pos, objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f), Color.Aqua);
             primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
             primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
             primBatch.End();
 
             map.DebugDraw(g, primBatch, player.Cam);
+
+            //if (gameOver)
+            //{
+            //    sb.Begin();
+            //    sb.DrawString(sf, "Game Over!", new Vector2(this.width / 2, this.height / 2), Color.DarkCyan);
+            //    sb.End();
+            //}
         }
     }
 }

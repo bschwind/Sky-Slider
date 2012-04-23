@@ -70,7 +70,7 @@ namespace SkySlider.Players
             float accelerationFactor;
 
             Vector3 damping = this.sphereBody.Vel * 0.002f;
-            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
+            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D) && sphereBody.InContact)
             {
                 damping = this.sphereBody.Vel * 0.05f; //increase damping if no keys are pressed
             }
