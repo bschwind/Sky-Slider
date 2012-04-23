@@ -67,7 +67,7 @@ namespace SkySlider.Players
         private void UpdateKeyPresses(GameTime g)
         {
             Vector3 intendedDirection = Vector3.Zero; //used to determine if player is pushing against a wall
-            float inAirAccelerationFactor;
+            float accelerationFactor;
 
             Vector3 damping = this.sphereBody.Vel * 0.002f;
             if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
@@ -79,25 +79,25 @@ namespace SkySlider.Players
 
             if (sphereBody.InContact)
             {
-                inAirAccelerationFactor = 1f;
+                accelerationFactor = 1f;
             }
             else
             {
-                inAirAccelerationFactor = 0.5f; //if character is in the air, reduce mobility
+                accelerationFactor = 0.5f; //if character is in the air, reduce mobility
             }
 
             if (clinging)
             {
-                inAirAccelerationFactor = 0f; //cannot move while clinging
+                accelerationFactor = 6f; //cannot move while clinging
+                sphereBody.AddForce(-sphereBody.Normal * 0.01f);
             }
-
 
             if (InputHandler.IsKeyPressed(Keys.W))
             {
                 intendedDirection += cam.Forward;
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
-                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
+                sphereBody.AddForce(dir * acceleration * accelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.S))
@@ -106,7 +106,7 @@ namespace SkySlider.Players
                 Vector3 dir = Vector3.Cross(new Vector3(0f, 1f, 0f), Vector3.Cross(cam.Forward, new Vector3(0f, 1f, 0f)));
                 dir.Normalize();
                 dir *= -1f;
-                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
+                sphereBody.AddForce(dir * acceleration * accelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.D))
@@ -114,7 +114,7 @@ namespace SkySlider.Players
                 intendedDirection += cam.Right;
                 Vector3 dir = cam.Right;
                 dir.Normalize();
-                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
+                sphereBody.AddForce(dir * acceleration * accelerationFactor);
             }
 
             if (InputHandler.IsKeyPressed(Keys.A))
@@ -123,7 +123,7 @@ namespace SkySlider.Players
                 Vector3 dir = cam.Right;
                 dir.Normalize();
                 dir *= -1f;
-                sphereBody.AddForce(dir * acceleration * inAirAccelerationFactor);
+                sphereBody.AddForce(dir * acceleration * accelerationFactor);
             }
 
             if (!canJump) //extended jump
@@ -168,7 +168,7 @@ namespace SkySlider.Players
                     }
                 }
 
-                if ((Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0)
+                if ((Vector3.Dot(intendedDirection, sphereBody.Normal) > 0) || !sphereBody.InContact)
                 {
                     //stop clinging is player is pushing away
                     clinging = false;
