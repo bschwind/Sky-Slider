@@ -40,7 +40,7 @@ namespace SkySlider.Panels
         private Client client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 5;
+        private int frameSkip = 0;
         private int currentFrame = 0;
 
         private bool gameOver = false;
@@ -91,7 +91,7 @@ namespace SkySlider.Panels
                     int[] nameLengths = new int[numNames];
                     for (int i = 0; i < numNames; i++)
                     {
-                        nameLengths[i] = data[1 + i];
+                        nameLengths[i] = data[2 + i];
                     }
                     int currentIndex = 2 + numNames;
                     for (int i = 0; i < nameLengths.Length; i++)
