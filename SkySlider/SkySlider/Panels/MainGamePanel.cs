@@ -30,7 +30,6 @@ namespace SkySlider.Panels
         private Player player;
 
         private Vector3 objectiveLocation; //block players must reach
-        private Mesh box;
 
         //Networking Code
         private Dictionary<string, RemotePlayer> remotePlayers;
@@ -80,7 +79,7 @@ namespace SkySlider.Panels
                     break;
                 case ServerToClientProtocol.ClientPositionUpdated:
                     byte nameLength = data[1];
-                    name = encoder.GetString(data, 1, nameLength);
+                    name = encoder.GetString(data, 2, nameLength);
                     float x = BitConverter.ToSingle(data, 2 + nameLength);
                     float y = BitConverter.ToSingle(data, 2 + sizeof(float) + nameLength);
                     float z = BitConverter.ToSingle(data, 2 + (2*sizeof(float)) + nameLength);
@@ -89,7 +88,9 @@ namespace SkySlider.Panels
                     remotePlayers[name].Position = new Vector3(x, y, z);
                     break;
                 case ServerToClientProtocol.ClientDisconnected:
-
+                    name = encoder.GetString(data, 1, bytesRead - 1);
+                    remotePlayers.Remove(name);
+                    Console.WriteLine(name + " has disconnected");
                     break;
             }
         }
@@ -145,7 +146,7 @@ namespace SkySlider.Panels
             {
                 currentFrame = 0;
                 //Send updated position
-                //NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
+                NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
             }
 
             if (objectiveLocation == new Vector3(-1, -1, -1))
@@ -188,9 +189,7 @@ namespace SkySlider.Panels
             {
                 primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam);
             }
-
-            //Draw box at objective
-            primBatch.DrawMesh(box, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
+            
             //Draw sphere at objective
             primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
 
