@@ -48,7 +48,7 @@ namespace SkySlider.Panels
             client.OnDataReceived += new ClientHandlePacketData(client_OnDataReceived);
             try
             {
-                client.ConnectToServer("localhost", 16645);
+                client.ConnectToServer("156.143.93.190", 16645);
                 singleplayer = false;
             }
             catch
