@@ -35,7 +35,7 @@ namespace SkySlider.Panels
         private Dictionary<string, RemotePlayer> remotePlayers;
         private string localPlayerName;
         private Client client;
-        private bool singleplayer = false;
+        private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
         private int frameSkip = 5;
         private int currentFrame = 0;
@@ -43,18 +43,22 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
+            singleplayer = true;
+
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
             client.OnDataReceived += new ClientHandlePacketData(client_OnDataReceived);
-            try
+            if (!singleplayer)
             {
-                client.ConnectToServer("156.143.93.190", 16645);
-                singleplayer = false;
-            }
-            catch
-            {
-                Console.WriteLine("Could not connect to server, initiating single player mode");
-                singleplayer = true;
+                try
+                {
+                    client.ConnectToServer("156.143.93.190", 16645);
+                    singleplayer = false;
+                }
+                catch
+                {
+                    Console.WriteLine("Could not connect to server, initiating single player mode");
+                }
             }
 
             if (!singleplayer)
@@ -142,7 +146,7 @@ namespace SkySlider.Panels
             updateObjective(g);
 
             currentFrame++;
-            if (currentFrame > frameSkip)
+            if (!singleplayer && currentFrame > frameSkip)
             {
                 currentFrame = 0;
                 //Send updated position
