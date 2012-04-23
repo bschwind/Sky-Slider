@@ -24,7 +24,7 @@ namespace SkySlider.Networking
 
         public static void SendPlayerPosToServer(Vector3 pos, string name, Client client)
         {
-            /*byte[] data = new byte[2 + name.Length + sizeof(float)*3];
+            byte[] data = new byte[2 + name.Length + sizeof(float)*3];
             data[0] = (byte)ClientToServerProtocol.UpdatePosition;
             data[1] = (byte)name.Length;
             Array.ConstrainedCopy(encoder.GetBytes(name), 0, data, 2, name.Length);
@@ -32,7 +32,7 @@ namespace SkySlider.Networking
             Array.ConstrainedCopy(BitConverter.GetBytes(pos.Y), 0, data, 2 + sizeof(float) + name.Length, sizeof(float));
             Array.ConstrainedCopy(BitConverter.GetBytes(pos.Z), 0, data, 2 + (sizeof(float)*2) + name.Length, sizeof(float));
 
-            client.SendImmediate(data);*/
+            client.SendImmediate(data);
         }
 
         public static void Disconnect(string name, Client client)
