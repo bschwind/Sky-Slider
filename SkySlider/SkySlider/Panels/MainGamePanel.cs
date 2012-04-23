@@ -43,7 +43,7 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = true;
+            singleplayer = false;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -81,6 +81,24 @@ namespace SkySlider.Panels
                     Console.WriteLine("New client connected: " + name);
                     remotePlayers.Add(name, new RemotePlayer());
                     break;
+                case ServerToClientProtocol.ListOfClients:
+                    byte numNames = data[1];
+                    int[] nameLengths = new int[numNames];
+                    for (int i = 0; i < numNames; i++)
+                    {
+                        nameLengths[i] = data[1 + i];
+                    }
+                    int currentIndex = 2 + numNames;
+                    for (int i = 0; i < nameLengths.Length; i++)
+                    {
+                        string playerName = encoder.GetString(data, currentIndex, nameLengths[i]);
+                        if (playerName != localPlayerName)
+                        {
+                            remotePlayers.Add(playerName, new RemotePlayer());
+                        }
+                        currentIndex += nameLengths[i];
+                    }
+                    break;
                 case ServerToClientProtocol.ClientPositionUpdated:
                     byte nameLength = data[1];
                     name = encoder.GetString(data, 2, nameLength);
@@ -89,7 +107,15 @@ namespace SkySlider.Panels
                     float z = BitConverter.ToSingle(data, 2 + (2*sizeof(float)) + nameLength);
 
                     Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
-                    remotePlayers[name].Position = new Vector3(x, y, z);
+                    try
+                    {
+                        remotePlayers[name].Position = new Vector3(x, y, z);
+                    }
+                    catch
+                    {
+                        //Whatevs
+                    }
+                    
                     break;
                 case ServerToClientProtocol.ClientDisconnected:
                     name = encoder.GetString(data, 1, bytesRead - 1);
