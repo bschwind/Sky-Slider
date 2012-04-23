@@ -146,10 +146,10 @@ namespace SkySlider.Panels
             engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
             engine.AddRigidBody(new PlaneBody(Vector3.Up, new Vector3(0, 1f, 0)));
-            //engine.AddRigidBody(new PlaneBody(new Vector3(1f, 0, 0), new Vector3(1f, 0, 0)));
-            //engine.AddRigidBody(new PlaneBody(new Vector3(-1f, 0, 0), new Vector3(map.Width - 1, 0, 0)));
-            //engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, 1f), new Vector3(0, 0, 1f)));
-            //engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, -1f), new Vector3(0, 0, map.Depth - 1)));
+            engine.AddRigidBody(new PlaneBody(new Vector3(1f, 0, 0), new Vector3(1f, 0, 0)));
+            engine.AddRigidBody(new PlaneBody(new Vector3(-1f, 0, 0), new Vector3(map.Width - 1, 0, 0)));
+            engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, 1f), new Vector3(0, 0, 1f)));
+            engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, -1f), new Vector3(0, 0, map.Depth - 1)));
 
             MeshBuilder mb = new MeshBuilder(Device);
             sphere = mb.CreateSphere(1f, 10, 10);
