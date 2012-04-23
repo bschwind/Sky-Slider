@@ -107,7 +107,15 @@ namespace SkySlider.Panels
                     float z = BitConverter.ToSingle(data, 2 + (2*sizeof(float)) + nameLength);
 
                     Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
-                    remotePlayers[name].Position = new Vector3(x, y, z);
+                    try
+                    {
+                        remotePlayers[name].Position = new Vector3(x, y, z);
+                    }
+                    catch
+                    {
+                        //Whatevs
+                    }
+                    
                     break;
                 case ServerToClientProtocol.ClientDisconnected:
                     name = encoder.GetString(data, 1, bytesRead - 1);
