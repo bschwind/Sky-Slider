@@ -43,7 +43,7 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = true;
+            singleplayer = false;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -80,6 +80,24 @@ namespace SkySlider.Panels
                     string name = encoder.GetString(data, 1, bytesRead - 1);
                     Console.WriteLine("New client connected: " + name);
                     remotePlayers.Add(name, new RemotePlayer());
+                    break;
+                case ServerToClientProtocol.ListOfClients:
+                    byte numNames = data[1];
+                    int[] nameLengths = new int[numNames];
+                    for (int i = 0; i < numNames; i++)
+                    {
+                        nameLengths[i] = data[1 + i];
+                    }
+                    int currentIndex = 2 + numNames;
+                    for (int i = 0; i < nameLengths.Length; i++)
+                    {
+                        string playerName = encoder.GetString(data, currentIndex, nameLengths[i]);
+                        if (playerName != localPlayerName)
+                        {
+                            remotePlayers.Add(playerName, new RemotePlayer());
+                        }
+                        currentIndex += nameLengths[i];
+                    }
                     break;
                 case ServerToClientProtocol.ClientPositionUpdated:
                     byte nameLength = data[1];
