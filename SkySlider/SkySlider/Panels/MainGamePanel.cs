@@ -144,9 +144,9 @@ namespace SkySlider.Panels
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
             //add back wall
-            mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height, 1), new Vector3(map.Width - 1, 0, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height - 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
             //add front wall
-            mb.AddQuad(new Vector3(map.Width - 1, map.Height, map.Depth - 1), new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), new Vector3(map.Width - 1, 0, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            mb.AddQuad(new Vector3(map.Width - 1, map.Height - 1, map.Depth - 1), new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), new Vector3(map.Width - 1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
             //add left wall
             mb.AddQuad(new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, map.Height - 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Depth, map.Height));
             //add right wall

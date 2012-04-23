@@ -78,6 +78,11 @@ namespace SkySlider.Panels
 
         public override void Update(GameTime g)
         {
+            if (InputHandler.IsKeyPressed(Keys.Escape))
+            {
+                this.exitDesired = true;
+            }
+
             cam.Update(g);
             base.Update(g);
 

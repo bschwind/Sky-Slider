@@ -17,9 +17,9 @@ namespace SkySlider.Maps
     /// </summary>
     public class Map
     {
-        private int width = 10;
-        private int height = 10;
-        private int depth = 10;
+        private int width = 8;
+        private int height = 26;
+        private int depth = 8;
 
         private Block[, ,] blocks; //3D array of blocks
 
@@ -69,17 +69,10 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        if (y == 0) //auto-create floor
+                        if ((y == 0) || (x == 0) || (z == 0) || (x == width - 1) || (z == depth - 1)) //auto-create floor and walls
                         {
                             blocks[x, y, z].Type = 1;
                             continue;
-                        }
-                        blocks[x, y, z].Type = (byte)r.Next(0, 11);
-                        blocks[x, y, z].RotationAxis = (byte)0;
-                        blocks[x, y, z].Rotation = (byte)0;
-                        if (r.Next() % 4 == 0)
-                        {
-                            blocks[x, y, z].Type = 4;
                         }
                         else
                         {

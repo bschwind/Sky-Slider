@@ -69,14 +69,6 @@ namespace SkySlider.Players
             Vector3 intendedDirection = Vector3.Zero; //used to determine if player is pushing against a wall
             float accelerationFactor;
 
-            Vector3 damping = this.sphereBody.Vel * 0.002f;
-            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D) && sphereBody.InContact)
-            {
-                damping = this.sphereBody.Vel * 0.05f; //increase damping if no keys are pressed
-            }
-
-            damping *= new Vector3(1f, 0f, 1f); //damping should only be in the x and z directions
-
             if (sphereBody.InContact)
             {
                 accelerationFactor = 1f;
@@ -125,6 +117,8 @@ namespace SkySlider.Players
                 dir *= -1f;
                 sphereBody.AddForce(dir * acceleration * accelerationFactor);
             }
+
+
 
             if (!canJump) //extended jump
             {
@@ -176,7 +170,16 @@ namespace SkySlider.Players
 
             }
 
-
+            Vector3 damping = this.sphereBody.Vel * 0.006f;
+            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
+            {
+                damping = this.sphereBody.Vel * 0.05f; //increase damping if no keys are pressed
+            }
+            if (Vector3.Dot(intendedDirection, this.sphereBody.Vel) < 0)
+            {
+                damping *= -Vector3.Dot(intendedDirection, this.sphereBody.Vel) * 5;
+            }
+            damping *= new Vector3(1f, 0f, 1f); //damping should only be in the x and z directions
             sphereBody.AddForce(-damping);
         }
 
