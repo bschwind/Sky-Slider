@@ -44,7 +44,7 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = false;
+            singleplayer = true;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -87,7 +87,7 @@ namespace SkySlider.Panels
                     int[] nameLengths = new int[numNames];
                     for (int i = 0; i < numNames; i++)
                     {
-                        nameLengths[i] = data[1 + i];
+                        nameLengths[i] = data[2 + i];
                     }
                     int currentIndex = 2 + numNames;
                     for (int i = 0; i < nameLengths.Length; i++)
@@ -140,9 +140,9 @@ namespace SkySlider.Panels
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
             //add back wall
-            mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height, 1), new Vector3(map.Width - 1, 0, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height - 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
             //add front wall
-            mb.AddQuad(new Vector3(map.Width - 1, map.Height, map.Depth - 1), new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), new Vector3(map.Width - 1, 0, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
+            mb.AddQuad(new Vector3(map.Width - 1, map.Height - 1, map.Depth - 1), new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), new Vector3(map.Width - 1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
             //add left wall
             mb.AddQuad(new Vector3(1, map.Height - 1, map.Depth - 1), new Vector3(1, map.Height - 1, 1), new Vector3(1, 1, 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Depth, map.Height));
             //add right wall
