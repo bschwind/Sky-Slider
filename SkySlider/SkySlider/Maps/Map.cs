@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GraphicsToolkit.Graphics;
 using GraphicsToolkit.Physics._3D.Geometry;
+using GraphicsToolkit.Physics._3D.Bodies;
+using GraphicsToolkit.Physics._3D;
 using System.IO;
 
 namespace SkySlider.Maps
@@ -122,6 +124,13 @@ namespace SkySlider.Maps
                             objectiveVectors.Add(new Vector3(x, y, z));
    //                         blocks[x, y, z].Type = 9;
                         }
+                        if ((x == width - 1) || (z == depth - 1) || (x == 0) || (z == 0) || (y == 0))
+                        {
+                            blocks[x, y, z].Type = 0;
+                            
+                        }
+
+
                     }
                 }
             }

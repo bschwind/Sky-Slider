@@ -8,6 +8,7 @@ namespace SkySlider.Networking
     public enum ServerToClientProtocol
     {
         NewClientConnected,
+        ListOfClients,
         ClientPositionUpdated,
         ClientDisconnected
     }
