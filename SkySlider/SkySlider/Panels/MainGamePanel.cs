@@ -66,10 +66,11 @@ namespace SkySlider.Panels
                 }
             }
 
+            Random rand = new Random();
+            localPlayerName = "" + rand.Next(0, 255);
+
             if (!singleplayer)
             {
-                Random rand = new Random();
-                localPlayerName = "Brian" + rand.Next(0, 500);
                 NetworkSender.SendNewPlayerToServer(localPlayerName, client);
             }
         }
@@ -139,7 +140,7 @@ namespace SkySlider.Panels
             //cam = new FirstPersonCamera(0.5f, 10);
             //cam.Pos = new Vector3(3, 3, 13)
 
-            map = new Map("Content/Levels/ramps.txt"); //load map
+            map = new Map("Content/Levels/Level1-1.txt"); //load map
 
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
@@ -238,14 +239,14 @@ namespace SkySlider.Panels
                 SphereBody sb = engine.GetBodies()[i] as SphereBody;
                 if (sb != null)
                 {
-                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam);
+                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, new Vector3((int.Parse(localPlayerName) % 5) / 5.0f, (int.Parse(localPlayerName) % 3) / 3.0f, (int.Parse(localPlayerName) % 2) / 2.0f));
                 }
             }
 
             //Draw remote players
             foreach (RemotePlayer p in remotePlayers.Values)
             {
-                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam);
+                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(p.Name) % 4) / 4.0f, (int.Parse(p.Name) % 3) / 3.0f, (int.Parse(p.Name) % 2) / 2.0f));
             }
             
             //Draw sphere at objective
