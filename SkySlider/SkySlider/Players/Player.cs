@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GraphicsToolkit;
 using GraphicsToolkit.Graphics;
 using GraphicsToolkit.Input;
 using GraphicsToolkit.Physics._3D.Bodies;
@@ -18,6 +19,7 @@ namespace SkySlider.Players
         private float currentAirTime = 0f;
         private bool canJump, falling, clinging;
         private Vector3 verticalJumpForce = new Vector3(0, 0.65f, 0);
+        private bool frictionlessMode = true;
 
         private float acceleration = 0.1f;
         private int score = 0;
@@ -59,9 +61,30 @@ namespace SkySlider.Players
 
 
             UpdateKeyPresses(g);
+            float velThreshold;
+
+            if (!frictionlessMode)
+            {
+                velThreshold = 5;
+            }
+            else
+            {
+                velThreshold = 9;
+            }
+
+            if (sphereBody.Vel.Length() > velThreshold)
+            {
+                float newFOV = MathHelper.Lerp(45f, 90f, ((sphereBody.Vel.Length()-velThreshold) / 10f));
+                newFOV = MathHelper.Clamp(newFOV, 45f, 90f);
+                cam.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(newFOV), (float)Config.ScreenWidth / Config.ScreenHeight, 0.1f, 1000f);
+            }
+            else
+            {
+                cam.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), (float)Config.ScreenWidth / Config.ScreenHeight, 0.1f, 1000f);
+            }
+            
             cam.TargetPos = sphereBody.Pos;
             cam.Update(g);
-            
         }
 
         private void UpdateKeyPresses(GameTime g)
@@ -78,7 +101,12 @@ namespace SkySlider.Players
                 accelerationFactor = 0.5f; //if character is in the air, reduce mobility
             }
 
-            if (clinging)
+            if (frictionlessMode)
+            {
+                accelerationFactor = 1.0f;
+            }
+
+            if (clinging && !frictionlessMode)
             {
                 //accelerationFactor = 6f; //cannot move while clinging
                 sphereBody.AddForce(-sphereBody.Normal * 0.01f);
@@ -144,7 +172,7 @@ namespace SkySlider.Players
                 clinging = false;
             }
 
-            if (((sphereBody.InContact) && (Math.Abs(sphereBody.Normal.X) + Math.Abs(sphereBody.Normal.Z) >= 0.97f)) || clinging)
+            if (!frictionlessMode && ((sphereBody.InContact) && (Math.Abs(sphereBody.Normal.X) + Math.Abs(sphereBody.Normal.Z) >= 0.97f)) || clinging)
             {
                 intendedDirection.Normalize();
                 if ((Math.Abs(Vector3.Dot(intendedDirection, sphereBody.Normal)) > 0.6f) || clinging) //player is pushing against wall
@@ -180,7 +208,10 @@ namespace SkySlider.Players
                 damping *= -Vector3.Dot(intendedDirection, this.sphereBody.Vel) * 5;
             }
             damping *= new Vector3(1f, 0f, 1f); //damping should only be in the x and z directions
-            sphereBody.AddForce(-damping);
+            if (!frictionlessMode)
+            {
+                sphereBody.AddForce(-damping);
+            }
         }
 
         public void givePoint()

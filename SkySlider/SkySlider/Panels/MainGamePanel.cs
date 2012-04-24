@@ -139,7 +139,7 @@ namespace SkySlider.Panels
             //cam = new FirstPersonCamera(0.5f, 10);
             //cam.Pos = new Vector3(3, 3, 13)
 
-            map = new Map("Content/Levels/Level1-1.txt"); //load map
+            map = new Map("Content/Levels/ramps.txt"); //load map
 
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
