@@ -43,5 +43,14 @@ namespace SkySlider.Networking
 
             client.SendImmediate(data);
         }
+
+        public static void SendObjectiveHit(string name, Client client)
+        {
+            byte[] data = new byte[1 + name.Length];
+            data[0] = (byte)ClientToServerProtocol.ObjectiveHit;
+            Array.ConstrainedCopy(encoder.GetBytes(name), 0, data, 1, name.Length);
+
+            client.SendImmediate(data);
+        }
     }
 }

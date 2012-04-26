@@ -19,7 +19,7 @@ namespace SkySlider.Players
         private float currentAirTime = 0f;
         private bool canJump, falling, clinging;
         private Vector3 verticalJumpForce = new Vector3(0, 0.65f, 0);
-        private bool frictionlessMode = true;
+        private bool frictionlessMode = false;
 
         private float acceleration = 0.1f;
         private int score = 0;

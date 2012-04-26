@@ -7,8 +7,9 @@ namespace SkySlider.Networking
 {
     public enum ClientToServerProtocol
     {
-        NewConnection,
-        UpdatePosition,
-        Disconnect
+        NewConnection = 0,
+        UpdatePosition = 1,
+        Disconnect = 2,
+        ObjectiveHit = 3
     }
 }

@@ -40,15 +40,18 @@ namespace SkySlider.Panels
         private Client client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 0;
+        private int frameSkip = 5;
         private int currentFrame = 0;
+        private float objectiveCoolDown = 2f;
+        private float currentCoolDown;
+        private bool coolingDown;
 
         private bool gameOver = false;
         
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = true;
+            singleplayer = false;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -128,6 +131,13 @@ namespace SkySlider.Panels
                     remotePlayers.Remove(name);
                     Console.WriteLine(name + " has disconnected");
                     break;
+                case ServerToClientProtocol.UpdateObjective:
+                    int objX = BitConverter.ToInt32(data, 1);
+                    int objY = BitConverter.ToInt32(data, 1 + sizeof(int));
+                    int objZ = BitConverter.ToInt32(data, 1 + (2 * sizeof(int)));
+                    //Update objective location
+                    objectiveLocation = new Vector3(objX, objY, objZ);
+                    break;
             }
         }
 
@@ -157,7 +167,10 @@ namespace SkySlider.Panels
             walls = mb.End();
             walls.Texture = content.Load<Texture2D>("Textures/BlockTextures/Walls");
 
-            objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
+            if (singleplayer)
+            {
+                objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
+            }
 
             partition = new MapPartition(map);
 
@@ -208,7 +221,7 @@ namespace SkySlider.Panels
                 NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
             }
 
-            if (objectiveLocation == new Vector3(-1, -1, -1))
+            if (singleplayer && objectiveLocation == new Vector3(-1, -1, -1))
             {
                 gameOver = true;
             }
@@ -219,14 +232,29 @@ namespace SkySlider.Panels
         /// <param name="g"></param>
         private void updateObjective(GameTime g)
         {
+            if (coolingDown)
+            {
+                currentCoolDown += (float)g.ElapsedGameTime.TotalSeconds;
+                if (currentCoolDown > objectiveCoolDown)
+                {
+                    coolingDown = false;
+                }
+            }
+
+            //If we're touching the objective
             if (((int)player.Body.Pos.X == objectiveLocation.X) &&
                 ((int)player.Body.Pos.Y == objectiveLocation.Y) &&
                 ((int)player.Body.Pos.Z == objectiveLocation.Z))
             {
-                player.givePoint();
-                objectiveLocation = map.getNextObjective(new Vector3((int)player.Body.Pos.X,
-                    (int)player.Body.Pos.Y,
-                    (int)player.Body.Pos.Z));
+                if (!coolingDown)
+                {
+                    player.givePoint();
+                    /*objectiveLocation = map.getNextObjective(new Vector3((int)player.Body.Pos.X,
+                        (int)player.Body.Pos.Y,
+                        (int)player.Body.Pos.Z));*/
+                    NetworkSender.SendObjectiveHit(localPlayerName, client);
+                    coolingDown = true;
+                }
             }
         }
 
