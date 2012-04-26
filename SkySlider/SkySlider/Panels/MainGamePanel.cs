@@ -41,9 +41,9 @@ namespace SkySlider.Panels
         private NetClient client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 5;
+        private int frameSkip = 50;
         private int currentFrame = 0;
-        private float objectiveCoolDown = 2f;
+        private float objectiveCoolDown = 5f;
         private float currentCoolDown;
         private bool coolingDown;
 
@@ -359,9 +359,10 @@ namespace SkySlider.Panels
             }
 
             //Draw remote players
-            foreach (RemotePlayer p in remotePlayers.Values)
+            foreach (string name in remotePlayers.Keys)
             {
-                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(p.Name) % 4) / 4.0f, (int.Parse(p.Name) % 3) / 3.0f, (int.Parse(p.Name) % 2) / 2.0f));
+                RemotePlayer p = remotePlayers[name];
+                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(name) % 4) / 4.0f, (int.Parse(name) % 3) / 3.0f, (int.Parse(name) % 2) / 2.0f));
             }
             
             //Draw sphere at objective
