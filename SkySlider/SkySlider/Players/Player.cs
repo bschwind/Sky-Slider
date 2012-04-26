@@ -19,7 +19,7 @@ namespace SkySlider.Players
         private float currentAirTime = 0f;
         private bool canJump, falling, clinging;
         private Vector3 verticalJumpForce = new Vector3(0, 0.65f, 0);
-        private bool frictionlessMode = true;
+        private bool frictionlessMode = false;
 
         private float acceleration = 0.1f;
         private int score = 0;
@@ -199,7 +199,7 @@ namespace SkySlider.Players
             }
 
             Vector3 damping = this.sphereBody.Vel * 0.006f;
-            if (!InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
+            if (sphereBody.InContact && !InputHandler.IsKeyPressed(Keys.W) && !InputHandler.IsKeyPressed(Keys.S) && !InputHandler.IsKeyPressed(Keys.A) && !InputHandler.IsKeyPressed(Keys.D))
             {
                 damping = this.sphereBody.Vel * 0.05f; //increase damping if no keys are pressed
             }
