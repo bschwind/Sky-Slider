@@ -11,10 +11,11 @@ using GraphicsToolkit.Input;
 using GraphicsToolkit.Physics._3D;
 using GraphicsToolkit.Physics._3D.Partitions;
 using GraphicsToolkit.Physics._3D.Bodies;
-using GraphicsToolkit.Networking;
 using SkySlider.Maps;
 using SkySlider.Players;
 using SkySlider.Networking;
+using Lidgren.Network;
+using System.Threading;
 
 namespace SkySlider.Panels
 {
@@ -38,7 +39,7 @@ namespace SkySlider.Panels
         //Networking Code
         private Dictionary<string, RemotePlayer> remotePlayers;
         private string localPlayerName;
-        private Client client;
+        private NetClient client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
         private int frameSkip = 50;
@@ -55,33 +56,101 @@ namespace SkySlider.Panels
             singleplayer = true;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
-            client = new Client();
-            client.OnDataReceived += new ClientHandlePacketData(client_OnDataReceived);
-            if (!singleplayer)
-            {
-                try
-                {
-                    client.ConnectToServer("156.143.93.190", 16645);
-                    singleplayer = false;
-                }
-                catch
-                {
-                    Console.WriteLine("Could not connect to server, initiating single player mode");
-                }
-            }
 
             Random rand = new Random();
             localPlayerName = "" + rand.Next(0, 255);
 
-            if (!singleplayer)
+            NetPeerConfiguration config = new NetPeerConfiguration("SkySlider");
+            config.EnableMessageType(NetIncomingMessageType.Data);
+            client = new NetClient(config);
+            client.Start();
+            client.Connect("156.143.93.190", 16645);
+
+            NetOutgoingMessage newClientMsg = client.CreateMessage();
+            newClientMsg.Write((byte)ClientToServerProtocol.NewConnection);
+            newClientMsg.Write(localPlayerName);
+            Thread.Sleep(500);
+
+            client.SendMessage(newClientMsg, NetDeliveryMethod.ReliableOrdered);
+
+            Thread thread = new Thread(new ThreadStart(listenForPackets));
+            thread.Start();
+        }
+
+        void listenForPackets()
+        {
+            while (true)
             {
-                NetworkSender.SendNewPlayerToServer(localPlayerName, client);
+                NetIncomingMessage msg;
+                while ((msg = client.ReadMessage()) != null)
+                {
+                    switch (msg.MessageType)
+                    {
+                        case NetIncomingMessageType.Data:
+                            ServerToClientProtocol protocol = (ServerToClientProtocol)msg.ReadByte();
+                            switch (protocol)
+                            {
+                                case ServerToClientProtocol.NewClientConnected:
+                                    string name = msg.ReadString();
+                                    Console.WriteLine("New client connected: " + name);
+                                    remotePlayers.Add(name, new RemotePlayer());
+                                    break;
+                                case ServerToClientProtocol.ListOfClients:
+                                    int numNames = msg.ReadInt32();
+                                    for (int i = 0; i < numNames; i++)
+                                    {
+                                        string playerName = msg.ReadString();
+                                        if (playerName != localPlayerName)
+                                        {
+                                            remotePlayers.Add(playerName, new RemotePlayer());
+                                        }
+                                    }
+                                    break;
+                                case ServerToClientProtocol.ClientPositionUpdated:
+                                    name = msg.ReadString();
+                                    float x = msg.ReadSingle();
+                                    float y = msg.ReadSingle();
+                                    float z = msg.ReadSingle();
+
+                         //           Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
+                                    try
+                                    {
+                                        remotePlayers[name].Position = new Vector3(x, y, z);
+                                    }
+                                    catch
+                                    {
+                                        //Whatevs
+                                    }
+
+                                    break;
+                                case ServerToClientProtocol.ClientDisconnected:
+                                    name = msg.ReadString();
+                                    remotePlayers.Remove(name);
+                                    Console.WriteLine(name + " has disconnected");
+                                    break;
+                                case ServerToClientProtocol.UpdateObjective:
+                                    int objX = msg.ReadInt32();
+                                    int objY = msg.ReadInt32();
+                                    int objZ = msg.ReadInt32();
+                                    //Update objective location
+                                    objectiveLocation = new Vector3(objX, objY, objZ);
+                                    break;
+                            }
+                            break;
+                        case NetIncomingMessageType.ErrorMessage:
+                            Console.WriteLine(msg.ReadString());
+                            break;
+                        default:
+                            Console.WriteLine("Unhandled type: " + msg.MessageType);
+                            break;
+                    }
+                }
             }
         }
 
         void client_OnDataReceived(byte[] data, int bytesRead)
         {
-            byte protocolByte = data[0];
+            /*byte protocolByte = data[0];
             ServerToClientProtocol protocol = (ServerToClientProtocol)protocolByte;
 
             switch (protocol)
@@ -139,7 +208,7 @@ namespace SkySlider.Panels
                     //Update objective location
                     objectiveLocation = new Vector3(objX, objY, objZ);
                     break;
-            }
+            }*/
         }
 
         public override void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -151,7 +220,7 @@ namespace SkySlider.Panels
             //cam = new FirstPersonCamera(0.5f, 10);
             //cam.Pos = new Vector3(3, 3, 13)
 
-            map = new Map("Content/Levels/Jon"); //load map
+            map = new Map("Content/Levels/Level1-1.txt"); //load map
 
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
@@ -209,8 +278,12 @@ namespace SkySlider.Panels
                 ExitDesired = true;
                 if (!singleplayer)
                 {
-                    NetworkSender.Disconnect(localPlayerName, client);
-                    client.Disconnect();
+                    //NetworkSender.Disconnect(localPlayerName, client);
+                    NetOutgoingMessage disconnectMessage = client.CreateMessage();
+                    disconnectMessage.Write((byte)ClientToServerProtocol.Disconnect);
+                    disconnectMessage.Write(localPlayerName);
+                    client.SendMessage(disconnectMessage, NetDeliveryMethod.ReliableOrdered);
+                    client.Disconnect("see ya");
                 }
             }
 
@@ -223,7 +296,15 @@ namespace SkySlider.Panels
             {
                 currentFrame = 0;
                 //Send updated position
-                NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
+                //NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
+                NetOutgoingMessage newPosMsg = client.CreateMessage();
+                newPosMsg.Write((byte)ClientToServerProtocol.UpdatePosition);
+                newPosMsg.Write(localPlayerName);
+                newPosMsg.Write(player.Body.Pos.X);
+                newPosMsg.Write(player.Body.Pos.Y);
+                newPosMsg.Write(player.Body.Pos.Z);
+
+                client.SendMessage(newPosMsg, NetDeliveryMethod.ReliableOrdered);
             }
 
             if (singleplayer && objectiveLocation == new Vector3(-1, -1, -1))
@@ -254,10 +335,12 @@ namespace SkySlider.Panels
                 if (!coolingDown)
                 {
                     player.givePoint();
-                    objectiveLocation = map.getNextObjective(new Vector3((int)player.Body.Pos.X,
-                        (int)player.Body.Pos.Y,
-                        (int)player.Body.Pos.Z));
-                    NetworkSender.SendObjectiveHit(localPlayerName, client);
+                    //NetworkSender.SendObjectiveHit(localPlayerName, client);
+                    NetOutgoingMessage objectiveHitMsg = client.CreateMessage();
+                    objectiveHitMsg.Write((byte)ClientToServerProtocol.ObjectiveHit);
+                    objectiveHitMsg.Write(localPlayerName);
+
+                    client.SendMessage(objectiveHitMsg, NetDeliveryMethod.ReliableOrdered);
                     coolingDown = true;
                 }
             }
