@@ -42,9 +42,9 @@ namespace SkySlider.Panels
         private NetClient client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 3;
+        private int frameSkip = 4;
         private int currentFrame = 0;
-        private float objectiveCoolDown = 5f;
+        private float objectiveCoolDown = 2f;
         private float currentCoolDown;
         private bool coolingDown;
 
@@ -79,7 +79,7 @@ namespace SkySlider.Panels
 
         void listenForPackets()
         {
-            Thread.Sleep(20);
+            Thread.Sleep(50);
 
             while (true)
             {
@@ -144,7 +144,7 @@ namespace SkySlider.Panels
                             Console.WriteLine(msg.ReadString());
                             break;
                         default:
-                            Console.WriteLine("Unhandled type: " + msg.MessageType);
+                            
                             break;
                     }
 
@@ -331,6 +331,7 @@ namespace SkySlider.Panels
                 if (currentCoolDown > objectiveCoolDown)
                 {
                     coolingDown = false;
+                    currentCoolDown = 0f;
                 }
             }
 
