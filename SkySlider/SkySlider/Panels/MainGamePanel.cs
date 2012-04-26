@@ -42,7 +42,7 @@ namespace SkySlider.Panels
         private NetClient client;
         private bool singleplayer;
         private ASCIIEncoding encoder = new ASCIIEncoding();
-        private int frameSkip = 50;
+        private int frameSkip = 3;
         private int currentFrame = 0;
         private float objectiveCoolDown = 5f;
         private float currentCoolDown;
@@ -79,6 +79,8 @@ namespace SkySlider.Panels
 
         void listenForPackets()
         {
+            Thread.Sleep(20);
+
             while (true)
             {
                 NetIncomingMessage msg;
@@ -112,7 +114,8 @@ namespace SkySlider.Panels
                                     float y = msg.ReadSingle();
                                     float z = msg.ReadSingle();
 
-                         //           Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
+                                    //Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
+
                                     try
                                     {
                                         remotePlayers[name].Position = new Vector3(x, y, z);
@@ -144,7 +147,10 @@ namespace SkySlider.Panels
                             Console.WriteLine("Unhandled type: " + msg.MessageType);
                             break;
                     }
+
+                    client.Recycle(msg);
                 }
+
             }
         }
 
@@ -283,7 +289,8 @@ namespace SkySlider.Panels
                     disconnectMessage.Write((byte)ClientToServerProtocol.Disconnect);
                     disconnectMessage.Write(localPlayerName);
                     client.SendMessage(disconnectMessage, NetDeliveryMethod.ReliableOrdered);
-                    client.Disconnect("see ya");
+                    client.FlushSendQueue();
+                    client.Disconnect("bye");
                 }
             }
 
@@ -304,7 +311,7 @@ namespace SkySlider.Panels
                 newPosMsg.Write(player.Body.Pos.Y);
                 newPosMsg.Write(player.Body.Pos.Z);
 
-                client.SendMessage(newPosMsg, NetDeliveryMethod.ReliableOrdered);
+                client.SendMessage(newPosMsg, NetDeliveryMethod.Unreliable);
             }
 
             if (singleplayer && objectiveLocation == new Vector3(-1, -1, -1))
@@ -332,16 +339,24 @@ namespace SkySlider.Panels
                 ((int)player.Body.Pos.Y == objectiveLocation.Y) &&
                 ((int)player.Body.Pos.Z == objectiveLocation.Z))
             {
-                if (!coolingDown)
+                if (singleplayer)
                 {
                     player.givePoint();
-                    //NetworkSender.SendObjectiveHit(localPlayerName, client);
-                    NetOutgoingMessage objectiveHitMsg = client.CreateMessage();
-                    objectiveHitMsg.Write((byte)ClientToServerProtocol.ObjectiveHit);
-                    objectiveHitMsg.Write(localPlayerName);
+                    objectiveLocation = map.getNextObjective(objectiveLocation);
+                }
+                else
+                {
+                    if (!coolingDown)
+                    {
 
-                    client.SendMessage(objectiveHitMsg, NetDeliveryMethod.ReliableOrdered);
-                    coolingDown = true;
+                        //NetworkSender.SendObjectiveHit(localPlayerName, client);
+                        NetOutgoingMessage objectiveHitMsg = client.CreateMessage();
+                        objectiveHitMsg.Write((byte)ClientToServerProtocol.ObjectiveHit);
+                        objectiveHitMsg.Write(localPlayerName);
+
+                        client.SendMessage(objectiveHitMsg, NetDeliveryMethod.ReliableOrdered);
+                        coolingDown = true;
+                    }
                 }
             }
         }
@@ -363,7 +378,7 @@ namespace SkySlider.Panels
             foreach (string name in remotePlayers.Keys)
             {
                 RemotePlayer p = remotePlayers[name];
-                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(name) % 4) / 4.0f, (int.Parse(name) % 3) / 3.0f, (int.Parse(name) % 2) / 2.0f));
+                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.18f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(name) % 4) / 4.0f, (int.Parse(name) % 3) / 3.0f, (int.Parse(name) % 2) / 2.0f));
             }
             
             //Draw sphere at objective
