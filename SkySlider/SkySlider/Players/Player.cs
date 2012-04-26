@@ -218,5 +218,13 @@ namespace SkySlider.Players
         {
             this.score++;
         }
+
+        public int Score
+        {
+            get
+            {
+                return score;
+            }
+        }
     }
 }

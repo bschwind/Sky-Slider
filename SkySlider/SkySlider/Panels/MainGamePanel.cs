@@ -28,11 +28,12 @@ namespace SkySlider.Panels
         private Mesh destination;
         private Mesh walls;
         private PrimitiveBatch primBatch;
-        private SpriteBatch sb;
+        private SpriteBatch sBatch;
         private SpriteFont sf;
         private Player player;
 
         private Vector3 objectiveLocation; //block players must reach
+        private Vector3 playerColor;
 
         //Networking Code
         private Dictionary<string, RemotePlayer> remotePlayers;
@@ -51,7 +52,7 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = false;
+            singleplayer = true;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
             client = new Client();
@@ -150,7 +151,7 @@ namespace SkySlider.Panels
             //cam = new FirstPersonCamera(0.5f, 10);
             //cam.Pos = new Vector3(3, 3, 13)
 
-            map = new Map("Content/Levels/Level1-1.txt"); //load map
+            map = new Map("Content/Levels/Jon"); //load map
 
             MeshBuilder mb = new MeshBuilder(Device);
             mb.Begin();
@@ -178,6 +179,8 @@ namespace SkySlider.Panels
             engine = new PhysicsEngine3D(partition);
             engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
+
+            //floor and walls
             engine.AddRigidBody(new PlaneBody(Vector3.Up, new Vector3(0, 1f, 0)));
             engine.AddRigidBody(new PlaneBody(new Vector3(1f, 0, 0), new Vector3(1f, 0, 0)));
             engine.AddRigidBody(new PlaneBody(new Vector3(-1f, 0, 0), new Vector3(map.Width - 1, 0, 0)));
@@ -185,13 +188,15 @@ namespace SkySlider.Panels
             engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, -1f), new Vector3(0, 0, map.Depth - 1)));
 
             sphere = mb.CreateSphere(1f, 10, 10);
-            destination = mb.CreateSphere(0.5f, 12, 12); //box to draw at objective
+            destination = mb.CreateSphere(0.5f, 12, 12); //sphere to draw at objective
             destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
 
 
-            sb = new SpriteBatch(Device);
+            sBatch = new SpriteBatch(Device);
             sf = content.Load<SpriteFont>("Fonts/Helvetica");
             primBatch = new PrimitiveBatch(Device);
+
+            playerColor = new Vector3((int.Parse(localPlayerName) % 5) / 5.0f, (int.Parse(localPlayerName) % 3) / 3.0f, (int.Parse(localPlayerName) % 2) / 2.0f);
             
         }
 
@@ -249,9 +254,9 @@ namespace SkySlider.Panels
                 if (!coolingDown)
                 {
                     player.givePoint();
-                    /*objectiveLocation = map.getNextObjective(new Vector3((int)player.Body.Pos.X,
+                    objectiveLocation = map.getNextObjective(new Vector3((int)player.Body.Pos.X,
                         (int)player.Body.Pos.Y,
-                        (int)player.Body.Pos.Z));*/
+                        (int)player.Body.Pos.Z));
                     NetworkSender.SendObjectiveHit(localPlayerName, client);
                     coolingDown = true;
                 }
@@ -267,7 +272,7 @@ namespace SkySlider.Panels
                 SphereBody sb = engine.GetBodies()[i] as SphereBody;
                 if (sb != null)
                 {
-                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, new Vector3((int.Parse(localPlayerName) % 5) / 5.0f, (int.Parse(localPlayerName) % 3) / 3.0f, (int.Parse(localPlayerName) % 2) / 2.0f));
+                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, playerColor);
                 }
             }
 
@@ -285,27 +290,39 @@ namespace SkySlider.Panels
             primBatch.DrawMesh(walls, Matrix.Identity, player.Cam);
 
             //Draw waypoint pointing to next objective
-            Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
-            playerToObjective.Normalize();
-            Vector3 tipPos = player.Body.Pos + 0.5f * playerToObjective;
-            Vector3 tBase = Vector3.Cross(Vector3.Up, playerToObjective);
-            tBase.Normalize();
-            Vector3 A = player.Body.Pos + 0.2f * tBase;
-            Vector3 B = player.Body.Pos - 0.2f * tBase;
+            if (!gameOver)
+            {
+                Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
+                playerToObjective.Normalize();
+                Vector3 tipPos = player.Body.Pos + 0.5f * playerToObjective;
+                Vector3 tBase = Vector3.Cross(Vector3.Up, playerToObjective);
+                tBase.Normalize();
+                Vector3 A = player.Body.Pos + 0.16f * tBase;
+                Vector3 B = player.Body.Pos - 0.16f * tBase;
+                tipPos -= playerToObjective * .2f;
+                A -= playerToObjective * .1f;
+                B -= playerToObjective * .1f;
 
-            primBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, player.Cam);
-            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
-            primBatch.FillTriangle(tipPos + new Vector3(0, 0.2f, 0), A + new Vector3(0, 0.2f, 0), B + new Vector3(0, 0.2f, 0), new Color(255, 105, 0));
-            primBatch.End();
+                primBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, player.Cam);
+                primBatch.FillTriangle(tipPos + new Vector3(0, 0.25f, 0), B + new Vector3(0, 0.25f, 0), A + new Vector3(0, 0.25f, 0), new Color(255, 105, 0));
+                primBatch.FillTriangle(tipPos + new Vector3(0, 0.25f, 0), A + new Vector3(0, 0.25f, 0), B + new Vector3(0, 0.25f, 0), new Color(255, 105, 0));
+                primBatch.End();
+            }
 
             map.DebugDraw(g, primBatch, player.Cam);
 
-            //if (gameOver)
-            //{
-            //    sb.Begin();
-            //    sb.DrawString(sf, "Game Over!", new Vector2(this.width / 2, this.height / 2), Color.DarkCyan);
-            //    sb.End();
-            //}
+            //draw score
+            sBatch.Begin();
+            sBatch.DrawString(sf, player.Score.ToString(), new Vector2(20, 20), Color.AntiqueWhite);
+            if (gameOver)
+            {
+                //draw game over text
+                sBatch.DrawString(sf, "Game Over! Welcome to FREE RUN MODE!!!!!!!", new Vector2(this.width / 2 - 400, this.height / 2), Color.AntiqueWhite);
+            }
+            sBatch.End();
+            Device.BlendState = BlendState.Opaque;
+            Device.DepthStencilState = DepthStencilState.Default;
+            Device.SamplerStates[0] = SamplerState.LinearWrap;
         }
     }
 }
