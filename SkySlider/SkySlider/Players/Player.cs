@@ -214,16 +214,15 @@ namespace SkySlider.Players
             }
         }
 
-        public void givePoint()
-        {
-            this.score++;
-        }
-
         public int Score
         {
             get
             {
                 return score;
+            }
+            set
+            {
+                score = value;
             }
         }
     }

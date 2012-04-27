@@ -11,6 +11,7 @@ namespace SkySlider.Networking
         ListOfClients = 1,
         ClientPositionUpdated = 2,
         ClientDisconnected = 3,
-        UpdateObjective = 4
+        UpdateObjective = 4,
+        UpdateScore = 5
     }
 }

@@ -53,7 +53,7 @@ namespace SkySlider.Panels
         public MainGamePanel()
             : base(Vector2.Zero, Vector2.One)
         {
-            singleplayer = true;
+            singleplayer = false;
 
             remotePlayers = new Dictionary<string, RemotePlayer>();
 
@@ -64,7 +64,7 @@ namespace SkySlider.Panels
             config.EnableMessageType(NetIncomingMessageType.Data);
             client = new NetClient(config);
             client.Start();
-            client.Connect("156.143.93.190", 16645);
+            client.Connect("localhost", 16645);
 
             NetOutgoingMessage newClientMsg = client.CreateMessage();
             newClientMsg.Write((byte)ClientToServerProtocol.NewConnection);
@@ -135,6 +135,12 @@ namespace SkySlider.Panels
                                     int objX = msg.ReadInt32();
                                     int objY = msg.ReadInt32();
                                     int objZ = msg.ReadInt32();
+                                    int score = msg.ReadInt32();
+
+                                    if (player != null)
+                                    {
+                                        player.Score = score;
+                                    }
                                     //Update objective location
                                     objectiveLocation = new Vector3(objX, objY, objZ);
                                     break;
@@ -314,7 +320,7 @@ namespace SkySlider.Panels
                 client.SendMessage(newPosMsg, NetDeliveryMethod.Unreliable);
             }
 
-            if (singleplayer && objectiveLocation == new Vector3(-1, -1, -1))
+            if (objectiveLocation == new Vector3(-1, -1, -1))
             {
                 gameOver = true;
             }
@@ -342,7 +348,7 @@ namespace SkySlider.Panels
             {
                 if (singleplayer)
                 {
-                    player.givePoint();
+                    player.Score = player.Score + 1;
                     objectiveLocation = map.getNextObjective(objectiveLocation);
                 }
                 else
@@ -383,8 +389,10 @@ namespace SkySlider.Panels
             }
             
             //Draw sphere at objective
-            primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
-
+            if (!gameOver)
+            {
+                primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
+            }
             //Draw walls
             primBatch.DrawMesh(walls, Matrix.Identity, player.Cam);
 
@@ -398,7 +406,7 @@ namespace SkySlider.Panels
                 tBase.Normalize();
                 Vector3 A = player.Body.Pos + 0.16f * tBase;
                 Vector3 B = player.Body.Pos - 0.16f * tBase;
-                tipPos -= playerToObjective * .2f;
+                tipPos -= playerToObjective * .1f;
                 A -= playerToObjective * .1f;
                 B -= playerToObjective * .1f;
 
@@ -412,10 +420,18 @@ namespace SkySlider.Panels
 
             //draw score
             sBatch.Begin();
-            sBatch.DrawString(sf, player.Score.ToString(), new Vector2(20, 20), Color.AntiqueWhite);
+            sBatch.DrawString(sf, "Player ID: " + localPlayerName, new Vector2(20, 20), Color.AntiqueWhite);
+            sBatch.DrawString(sf, "Score: " + player.Score.ToString(), new Vector2(20, 80), Color.AntiqueWhite);
+            if (!singleplayer)
+            {
+                sBatch.DrawString(sf, "Players Online: " + (remotePlayers.Count + 1), new Vector2(this.width - 325, 20), Color.AntiqueWhite);
+            }
+
+
+
             if (gameOver)
             {
-                //draw game over text
+
                 sBatch.DrawString(sf, "Game Over! Welcome to FREE RUN MODE!!!!!!!", new Vector2(this.width / 2 - 400, this.height / 2), Color.AntiqueWhite);
             }
             sBatch.End();
