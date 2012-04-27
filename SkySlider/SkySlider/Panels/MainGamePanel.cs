@@ -64,7 +64,7 @@ namespace SkySlider.Panels
             config.EnableMessageType(NetIncomingMessageType.Data);
             client = new NetClient(config);
             client.Start();
-            client.Connect("localhost", 16645);
+            client.Connect("156.143.93.190", 16645);
 
             NetOutgoingMessage newClientMsg = client.CreateMessage();
             newClientMsg.Write((byte)ClientToServerProtocol.NewConnection);
