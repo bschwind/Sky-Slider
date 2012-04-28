@@ -192,8 +192,34 @@ namespace SkySlider.Maps
                         {
                             continue;
                         }
+
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws each block
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="batch"></param>
+        /// <param name="cam"></param>
+        public void DebugDraw(GameTime g, PrimitiveBatch batch, Camera cam, Effect customEffect)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int z = 0; z < depth; z++)
+                    {
+                        byte type = blocks[x, y, z].Type;
+                        if (type == 0)
+                        {
+                            continue;
+                        }
                         
-                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x,y,z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, customEffect);
                     }
                 }
             }
@@ -205,7 +231,7 @@ namespace SkySlider.Maps
         /// <param name="g"></param>
         /// <param name="batch"></param>
         /// <param name="cam"></param>
-        public void DebugDraw(GameTime g, PrimitiveBatch batch, ThirdPersonCamera cam)
+        public void DebugDraw(GameTime g, PrimitiveBatch batch, Effect customEffect, ThirdPersonCamera cam)
         {
             //find out if block is between camera and player
             Vector3 camPos = cam.Pos;
@@ -261,7 +287,7 @@ namespace SkySlider.Maps
                             }
                         }
                         //block isn't between camera and player, so draw block normally
-                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
+                        batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam, customEffect);
                     }
                 }
             }

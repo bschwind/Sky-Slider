@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 using GraphicsToolkit.GUI;
 using GraphicsToolkit.Graphics;
 using GraphicsToolkit.Input;
@@ -23,15 +24,19 @@ namespace SkySlider.Panels
     {
         private PhysicsEngine3D engine;
         private MapPartition partition;
-        private Map map;
-        private FirstPersonCamera cam;
-        private Mesh sphere;
-        private Mesh destination;
-        private Mesh walls;
         private PrimitiveBatch primBatch;
         private SpriteBatch sBatch;
         private SpriteFont sf;
+
+        private Map map;
+
+        private Mesh sphere;
+        private Mesh destination;
+        private Mesh walls;
+        
         private Player player;
+
+        private Effect normalMapEffect;
 
         private Vector3 objectiveLocation; //block players must reach
         private Vector3 playerColor;
@@ -41,7 +46,6 @@ namespace SkySlider.Panels
         private string localPlayerName;
         private NetClient client;
         private bool singleplayer;
-        private ASCIIEncoding encoder = new ASCIIEncoding();
         private int frameSkip = 4;
         private int currentFrame = 0;
         private float objectiveCoolDown = 2f;
@@ -60,6 +64,11 @@ namespace SkySlider.Panels
             Random rand = new Random();
             localPlayerName = "" + rand.Next(0, 255);
 
+            setupNetworking();
+        }
+
+        private void setupNetworking()
+        {
             NetPeerConfiguration config = new NetPeerConfiguration("SkySlider");
             config.EnableMessageType(NetIncomingMessageType.Data);
             client = new NetClient(config);
@@ -114,15 +123,13 @@ namespace SkySlider.Panels
                                     float y = msg.ReadSingle();
                                     float z = msg.ReadSingle();
 
-                                    //Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
-
                                     try
                                     {
                                         remotePlayers[name].Position = new Vector3(x, y, z);
                                     }
                                     catch
                                     {
-                                        //Whatevs
+                                        
                                     }
 
                                     break;
@@ -160,81 +167,61 @@ namespace SkySlider.Panels
             }
         }
 
-        void client_OnDataReceived(byte[] data, int bytesRead)
-        {
-            /*byte protocolByte = data[0];
-            ServerToClientProtocol protocol = (ServerToClientProtocol)protocolByte;
-
-            switch (protocol)
-            {
-                case ServerToClientProtocol.NewClientConnected:
-                    string name = encoder.GetString(data, 1, bytesRead - 1);
-                    Console.WriteLine("New client connected: " + name);
-                    remotePlayers.Add(name, new RemotePlayer());
-                    break;
-                case ServerToClientProtocol.ListOfClients:
-                    byte numNames = data[1];
-                    int[] nameLengths = new int[numNames];
-                    for (int i = 0; i < numNames; i++)
-                    {
-                        nameLengths[i] = data[2 + i];
-                    }
-                    int currentIndex = 2 + numNames;
-                    for (int i = 0; i < nameLengths.Length; i++)
-                    {
-                        string playerName = encoder.GetString(data, currentIndex, nameLengths[i]);
-                        if (playerName != localPlayerName)
-                        {
-                            remotePlayers.Add(playerName, new RemotePlayer());
-                        }
-                        currentIndex += nameLengths[i];
-                    }
-                    break;
-                case ServerToClientProtocol.ClientPositionUpdated:
-                    byte nameLength = data[1];
-                    name = encoder.GetString(data, 2, nameLength);
-                    float x = BitConverter.ToSingle(data, 2 + nameLength);
-                    float y = BitConverter.ToSingle(data, 2 + sizeof(float) + nameLength);
-                    float z = BitConverter.ToSingle(data, 2 + (2*sizeof(float)) + nameLength);
-
-                    Console.WriteLine("Got position data. " + name + " is at " + x + " " + y + " " + z);
-                    try
-                    {
-                        remotePlayers[name].Position = new Vector3(x, y, z);
-                    }
-                    catch
-                    {
-                        //Whatevs
-                    }
-                    
-                    break;
-                case ServerToClientProtocol.ClientDisconnected:
-                    name = encoder.GetString(data, 1, bytesRead - 1);
-                    remotePlayers.Remove(name);
-                    Console.WriteLine(name + " has disconnected");
-                    break;
-                case ServerToClientProtocol.UpdateObjective:
-                    int objX = BitConverter.ToInt32(data, 1);
-                    int objY = BitConverter.ToInt32(data, 1 + sizeof(int));
-                    int objZ = BitConverter.ToInt32(data, 1 + (2 * sizeof(int)));
-                    //Update objective location
-                    objectiveLocation = new Vector3(objX, objY, objZ);
-                    break;
-            }*/
-        }
-
         public override void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             base.LoadContent(content);
 
             BlockData.Initialize(Device, content);
 
-            //cam = new FirstPersonCamera(0.5f, 10);
-            //cam.Pos = new Vector3(3, 3, 13)
-
-            map = new Map("Content/Levels/Level1-1.txt"); //load map
+            map = new Map("Content/Levels/ramps.txt"); //Load map
 
             MeshBuilder mb = new MeshBuilder(Device);
+
+            buildWalls(mb, content);
+
+            setupNormalMapEffect(content);
+
+            if (singleplayer)
+            {
+                objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
+            }
+
+            partition = new MapPartition(map);
+
+            player = new Player(new Vector3(5,5,5)); //spawn player
+
+            initializePhysicsEngine();
+
+            //Misc initialization stuff
+            sphere = mb.CreateSphere(1f, 10, 10);
+            destination = mb.CreateSphere(0.5f, 12, 12); //sphere to draw at objective
+            destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
+
+            sBatch = new SpriteBatch(Device);
+            sf = content.Load<SpriteFont>("Fonts/Helvetica");
+            primBatch = new PrimitiveBatch(Device);
+
+            playerColor = new Vector3((int.Parse(localPlayerName) % 5) / 5.0f, (int.Parse(localPlayerName) % 3) / 3.0f, (int.Parse(localPlayerName) % 2) / 2.0f);   
+        }
+
+        private void setupNormalMapEffect(ContentManager content)
+        {
+            //Set up the normal mapping effect
+            Vector4 lightColor = new Vector4(1, 1, 1, 1);
+            Vector4 ambientLightColor = new Vector4(.2f, .2f, .2f, 1);
+            float shininess = 5f;
+            float specularPower = 120.0f;
+
+            normalMapEffect = content.Load<Effect>("Effects/NormalMap");
+            normalMapEffect.Parameters["LightColor"].SetValue(lightColor);
+            normalMapEffect.Parameters["AmbientLightColor"].SetValue(ambientLightColor);
+
+            normalMapEffect.Parameters["Shininess"].SetValue(shininess);
+            normalMapEffect.Parameters["SpecularPower"].SetValue(specularPower);
+        }
+
+        private void buildWalls(MeshBuilder mb, ContentManager content)
+        {
             mb.Begin();
             //add back wall
             mb.AddQuad(new Vector3(1, map.Height - 1, 1), new Vector3(map.Width - 1, map.Height - 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(1, 1, 1), false, Vector2.Zero, new Vector2(map.Width, map.Height));
@@ -248,15 +235,11 @@ namespace SkySlider.Panels
             mb.AddQuad(new Vector3(1, 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(map.Width - 1, 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Depth));
             walls = mb.End();
             walls.Texture = content.Load<Texture2D>("Textures/BlockTextures/Walls");
+            walls.NormalMap = content.Load<Texture2D>("Textures/BlockTextures/Block1N");
+        }
 
-            if (singleplayer)
-            {
-                objectiveLocation = map.getNextObjective(new Vector3(-1, -1, -1)); //get first objective
-            }
-
-            partition = new MapPartition(map);
-
-            player = new Player(new Vector3(5,5,5)); //spawn player
+        private void initializePhysicsEngine()
+        {
             engine = new PhysicsEngine3D(partition);
             engine.Gravity = new Vector3(0, -0.1f, 0);
             engine.AddRigidBody(player.Body); //physics body of player
@@ -267,18 +250,16 @@ namespace SkySlider.Panels
             engine.AddRigidBody(new PlaneBody(new Vector3(-1f, 0, 0), new Vector3(map.Width - 1, 0, 0)));
             engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, 1f), new Vector3(0, 0, 1f)));
             engine.AddRigidBody(new PlaneBody(new Vector3(0, 0, -1f), new Vector3(0, 0, map.Depth - 1)));
+        }
 
-            sphere = mb.CreateSphere(1f, 10, 10);
-            destination = mb.CreateSphere(0.5f, 12, 12); //sphere to draw at objective
-            destination.Texture = content.Load<Texture2D>("Textures/BlockTextures/Destination");
-
-
-            sBatch = new SpriteBatch(Device);
-            sf = content.Load<SpriteFont>("Fonts/Helvetica");
-            primBatch = new PrimitiveBatch(Device);
-
-            playerColor = new Vector3((int.Parse(localPlayerName) % 5) / 5.0f, (int.Parse(localPlayerName) % 3) / 3.0f, (int.Parse(localPlayerName) % 2) / 2.0f);
-            
+        private void disconnectNetwork()
+        {
+            NetOutgoingMessage disconnectMessage = client.CreateMessage();
+            disconnectMessage.Write((byte)ClientToServerProtocol.Disconnect);
+            disconnectMessage.Write(localPlayerName);
+            client.SendMessage(disconnectMessage, NetDeliveryMethod.ReliableOrdered);
+            client.FlushSendQueue();
+            client.Disconnect("bye");
         }
 
         public override void Update(GameTime g)
@@ -290,13 +271,7 @@ namespace SkySlider.Panels
                 ExitDesired = true;
                 if (!singleplayer)
                 {
-                    //NetworkSender.Disconnect(localPlayerName, client);
-                    NetOutgoingMessage disconnectMessage = client.CreateMessage();
-                    disconnectMessage.Write((byte)ClientToServerProtocol.Disconnect);
-                    disconnectMessage.Write(localPlayerName);
-                    client.SendMessage(disconnectMessage, NetDeliveryMethod.ReliableOrdered);
-                    client.FlushSendQueue();
-                    client.Disconnect("bye");
+                    disconnectNetwork();
                 }
             }
 
@@ -304,12 +279,21 @@ namespace SkySlider.Panels
             engine.Update(g);
             updateObjective(g);
 
+            updatePositionSending();
+
+            if (objectiveLocation == new Vector3(-1, -1, -1))
+            {
+                gameOver = true;
+            }
+        }
+
+        private void updatePositionSending()
+        {
             currentFrame++;
             if (!singleplayer && currentFrame > frameSkip)
             {
                 currentFrame = 0;
                 //Send updated position
-                //NetworkSender.SendPlayerPosToServer(player.Body.Pos, localPlayerName, client);
                 NetOutgoingMessage newPosMsg = client.CreateMessage();
                 newPosMsg.Write((byte)ClientToServerProtocol.UpdatePosition);
                 newPosMsg.Write(localPlayerName);
@@ -319,12 +303,8 @@ namespace SkySlider.Panels
 
                 client.SendMessage(newPosMsg, NetDeliveryMethod.Unreliable);
             }
-
-            if (objectiveLocation == new Vector3(-1, -1, -1))
-            {
-                gameOver = true;
-            }
         }
+
         /// <summary>
         /// If the current objective has been reached, change the objective
         /// </summary>
@@ -355,8 +335,6 @@ namespace SkySlider.Panels
                 {
                     if (!coolingDown)
                     {
-
-                        //NetworkSender.SendObjectiveHit(localPlayerName, client);
                         NetOutgoingMessage objectiveHitMsg = client.CreateMessage();
                         objectiveHitMsg.Write((byte)ClientToServerProtocol.ObjectiveHit);
                         objectiveHitMsg.Write(localPlayerName);
@@ -371,32 +349,46 @@ namespace SkySlider.Panels
         public override void Draw(GameTime g)
         {
             base.Draw(g);
-            //draw spheres
-            for (int i = 0; i < engine.GetBodies().Count; i++)
+
+            normalMapEffect.Parameters["LightPosition"].SetValue(player.Body.Pos);
+
+            drawPhysicsSpheres();
+            drawRemotePlayers();
+            drawObjective();
+            drawWalls();
+            drawDirectionArrow();
+            drawMap(g);
+            drawHUD();
+        }
+
+        private void drawHUD()
+        {
+            sBatch.Begin();
+            sBatch.DrawString(sf, "Player ID: " + localPlayerName, new Vector2(20, 20), Color.AntiqueWhite);
+            sBatch.DrawString(sf, "Score: " + player.Score.ToString(), new Vector2(20, 80), Color.AntiqueWhite);
+            if (!singleplayer)
             {
-                SphereBody sb = engine.GetBodies()[i] as SphereBody;
-                if (sb != null)
-                {
-                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, playerColor);
-                }
+                sBatch.DrawString(sf, "Players Online: " + (remotePlayers.Count + 1), new Vector2(this.width - 325, 20), Color.AntiqueWhite);
             }
 
-            //Draw remote players
-            foreach (string name in remotePlayers.Keys)
+            if (gameOver)
             {
-                RemotePlayer p = remotePlayers[name];
-                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.18f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(name) % 4) / 4.0f, (int.Parse(name) % 3) / 3.0f, (int.Parse(name) % 2) / 2.0f));
-            }
-            
-            //Draw sphere at objective
-            if (!gameOver)
-            {
-                primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
-            }
-            //Draw walls
-            primBatch.DrawMesh(walls, Matrix.Identity, player.Cam);
 
-            //Draw waypoint pointing to next objective
+                sBatch.DrawString(sf, "Game Over! Welcome to FREE RUN MODE!!!!!!!", new Vector2(this.width / 2 - 400, this.height / 2), Color.AntiqueWhite);
+            }
+            sBatch.End();
+            Device.BlendState = BlendState.Opaque;
+            Device.DepthStencilState = DepthStencilState.Default;
+            Device.SamplerStates[0] = SamplerState.LinearWrap;
+        }
+
+        private void drawMap(GameTime g)
+        {
+            map.DebugDraw(g, primBatch, player.Cam, normalMapEffect);
+        }
+
+        private void drawDirectionArrow()
+        {
             if (!gameOver)
             {
                 Vector3 playerToObjective = objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f) - player.Body.Pos;
@@ -410,34 +402,45 @@ namespace SkySlider.Panels
                 A -= playerToObjective * .1f;
                 B -= playerToObjective * .1f;
 
-                primBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList, player.Cam);
+                primBatch.Begin(PrimitiveType.TriangleList, player.Cam);
                 primBatch.FillTriangle(tipPos + new Vector3(0, 0.25f, 0), B + new Vector3(0, 0.25f, 0), A + new Vector3(0, 0.25f, 0), new Color(255, 105, 0));
                 primBatch.FillTriangle(tipPos + new Vector3(0, 0.25f, 0), A + new Vector3(0, 0.25f, 0), B + new Vector3(0, 0.25f, 0), new Color(255, 105, 0));
                 primBatch.End();
             }
+        }
 
-            map.DebugDraw(g, primBatch, player.Cam);
+        private void drawWalls()
+        {
+            primBatch.DrawMesh(walls, Matrix.Identity, player.Cam, normalMapEffect);
+        }
 
-            //draw score
-            sBatch.Begin();
-            sBatch.DrawString(sf, "Player ID: " + localPlayerName, new Vector2(20, 20), Color.AntiqueWhite);
-            sBatch.DrawString(sf, "Score: " + player.Score.ToString(), new Vector2(20, 80), Color.AntiqueWhite);
-            if (!singleplayer)
+        private void drawObjective()
+        {
+            if (!gameOver)
             {
-                sBatch.DrawString(sf, "Players Online: " + (remotePlayers.Count + 1), new Vector2(this.width - 325, 20), Color.AntiqueWhite);
+                primBatch.DrawMesh(destination, Matrix.CreateScale(1f) * Matrix.CreateTranslation(objectiveLocation + new Vector3(0.5f, 0.5f, 0.5f)), player.Cam);
             }
+        }
 
-
-
-            if (gameOver)
+        private void drawRemotePlayers()
+        {
+            foreach (string name in remotePlayers.Keys)
             {
-
-                sBatch.DrawString(sf, "Game Over! Welcome to FREE RUN MODE!!!!!!!", new Vector2(this.width / 2 - 400, this.height / 2), Color.AntiqueWhite);
+                RemotePlayer p = remotePlayers[name];
+                primBatch.DrawMesh(sphere, Matrix.CreateScale(0.18f) * Matrix.CreateTranslation(p.Position), player.Cam, new Vector3((int.Parse(name) % 4) / 4.0f, (int.Parse(name) % 3) / 3.0f, (int.Parse(name) % 2) / 2.0f));
             }
-            sBatch.End();
-            Device.BlendState = BlendState.Opaque;
-            Device.DepthStencilState = DepthStencilState.Default;
-            Device.SamplerStates[0] = SamplerState.LinearWrap;
+        }
+
+        private void drawPhysicsSpheres()
+        {
+            for (int i = 0; i < engine.GetBodies().Count; i++)
+            {
+                SphereBody sb = engine.GetBodies()[i] as SphereBody;
+                if (sb != null)
+                {
+                    primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, playerColor);
+                }
+            }
         }
     }
 }

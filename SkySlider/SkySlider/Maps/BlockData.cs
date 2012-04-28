@@ -194,7 +194,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block1");
-
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
             return m;
         }
 
@@ -232,6 +232,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block2");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -258,6 +259,7 @@ namespace SkySlider.Maps
             mb.OffsetAllVerts(new Vector3(0, -0.25f, -0.25f)); //Offset the verts, because the above code centers the tile over the wrong position
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block2");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -285,6 +287,7 @@ namespace SkySlider.Maps
             
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block1");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -335,6 +338,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -363,6 +367,7 @@ namespace SkySlider.Maps
             
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block6");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -391,6 +396,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block7");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -462,6 +468,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block9");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
@@ -492,6 +499,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block10");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
 
             return m;
         }
