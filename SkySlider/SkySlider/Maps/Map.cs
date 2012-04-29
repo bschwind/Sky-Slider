@@ -17,9 +17,9 @@ namespace SkySlider.Maps
     /// </summary>
     public class Map
     {
-        private int width = 8;
-        private int height = 26;
-        private int depth = 8;
+        private int width = 900;
+        private int height = 5;
+        private int depth = 900;
 
         private Block[, ,] blocks; //3D array of blocks
 
@@ -28,7 +28,20 @@ namespace SkySlider.Maps
         private int minManhattanDistance = 25; //minimum distance between start and end markers
         //start and end markers are only generated in the overloaded constructor.
 
+        //private Dictionary<byte, Matrix[]> blockTransforms;
+        private Dictionary<byte, VertexBuffer> blockTransforms;
+
         private bool isTestMap = true;
+
+        // To store instance transform matrices in a vertex buffer, we use this custom
+        // vertex type which encodes 4x4 matrices as a set of four Vector4 values.
+        static VertexDeclaration instanceVertexDeclaration = new VertexDeclaration
+        (
+            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
+            new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 1),
+            new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 2),
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3)
+        );
 
         public int Width
         {
@@ -58,8 +71,15 @@ namespace SkySlider.Maps
         /// <summary>
         /// Generates the map by placing blocks into the block array
         /// </summary>
-        public Map()
+        public Map(GraphicsDevice device)
         {
+            blockTransforms = new Dictionary<byte, VertexBuffer>();
+            Dictionary<byte, List<Matrix>> tempBlockTransforms = new Dictionary<byte, List<Matrix>>();
+            for (int i = 1; i < 12; i++)
+            {
+                tempBlockTransforms.Add((byte)i, new List<Matrix>());
+            }
+
             blocks = new Block[width, height, depth];
             Random r = new Random();
 
@@ -69,16 +89,33 @@ namespace SkySlider.Maps
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        if ((y == 0) || (x == 0) || (z == 0) || (x == width - 1) || (z == depth - 1)) //auto-create floor and walls
+                        if (r.Next() % 29 == 0)
                         {
-                            blocks[x, y, z].Type = 1;
-                            continue;
+                            blocks[x, y, z].Type = (byte)r.Next(1, 12);
+                            blocks[x, y, z].Type = 7;
+                            blocks[x, y, z].RotationAxis = (byte)4;
+                            blocks[x, y, z].Rotation = (byte)1;
                         }
-                        else
+
+                        if ((y == 0) || (x == 0) || (z == 0) || (x == width - 1) || (z == depth - 1)) //auto-create floor and walls
                         {
                             blocks[x, y, z].Type = 0;
                         }
+
+                        if (tempBlockTransforms.ContainsKey(blocks[x, y, z].Type))
+                        {
+                            tempBlockTransforms[blocks[x, y, z].Type].Add(BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)));
+                        }
                     }
+                }
+            }
+
+            foreach (byte b in tempBlockTransforms.Keys)
+            {
+                if (tempBlockTransforms[b].Count > 0)
+                {
+                    blockTransforms.Add(b, new VertexBuffer(device, instanceVertexDeclaration, tempBlockTransforms[b].Count, BufferUsage.None));
+                    blockTransforms[b].SetData(tempBlockTransforms[b].ToArray());
                 }
             }
         }
@@ -86,8 +123,15 @@ namespace SkySlider.Maps
         /// Loads a previously saved map file
         /// </summary>
         /// <param name="dataDirectory">Path to the map file</param>
-        public Map(String dataDirectory)
+        public Map(GraphicsDevice device, String dataDirectory)
         {
+            blockTransforms = new Dictionary<byte, VertexBuffer>();
+            Dictionary<byte, List<Matrix>> tempBlockTransforms = new Dictionary<byte, List<Matrix>>();
+            for (int i = 1; i < 12; i++)
+            {
+                tempBlockTransforms.Add((byte)i, new List<Matrix>());
+            }
+
             if (!File.Exists(dataDirectory))
             {
                 throw new Exception("Map file not found!");
@@ -115,7 +159,7 @@ namespace SkySlider.Maps
                         if (blockDataString.Split(' ').Length == 4) //if block is start/end marker...
                         {
                             objectiveVectors.Add(new Vector3(x, y, z));
-   //                         blocks[x, y, z].Type = 9;
+                            //blocks[x, y, z].Type = 9;
                         }
                         if ((x == width - 1) || (z == depth - 1) || (x == 0) || (z == 0) || (y == 0))
                         {
@@ -123,7 +167,10 @@ namespace SkySlider.Maps
                             
                         }
 
-
+                        if(tempBlockTransforms.ContainsKey(blocks[x,y,z].Type))
+                        {
+                            tempBlockTransforms[blocks[x, y, z].Type].Add(BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)));
+                        }
                     }
                 }
             }
@@ -134,18 +181,14 @@ namespace SkySlider.Maps
                 isTestMap = false;
             }
 
-            //if (objectiveVectors.Count >= 2) //if there are sufficient start/end markers
-            //{
-            //    generateMarkers(); //determine start/end positions
-            //    Block startMarker = new Block();
-            //    Block endMarker = new Block();
-            //    startMarker.Type = 8; //for debug purposes
-            //    endMarker.Type = 9;
-            //    SetBlockAt((int)startLocation.X, (int)startLocation.Y, (int)startLocation.Z, startMarker);
-            //    SetBlockAt((int)endLocation.X, (int)endLocation.Y, (int)endLocation.Z, endMarker);
-            //}
-
-
+            foreach (byte b in tempBlockTransforms.Keys)
+            {
+                if (tempBlockTransforms[b].Count > 0)
+                {
+                    blockTransforms.Add(b, new VertexBuffer(device, instanceVertexDeclaration, tempBlockTransforms[b].Count, BufferUsage.None));
+                    blockTransforms[b].SetData(tempBlockTransforms[b].ToArray());
+                }
+            }
         }
 
         public Block GetBlockAt(int row, int col, int stack)
@@ -196,6 +239,14 @@ namespace SkySlider.Maps
                         batch.DrawMesh(BlockData.GetMeshFromID(blocks[x, y, z].Type), BlockData.GetRotationMatrix(blocks[x, y, z]) * Matrix.CreateTranslation(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f)), cam);
                     }
                 }
+            }
+        }
+
+        public void DrawInstanced(GameTime g, PrimitiveBatch batch, Camera cam, Effect customEffect)
+        {
+            foreach (byte b in blockTransforms.Keys)
+            {
+                batch.DrawInstancedMesh(BlockData.GetMeshFromID(b), cam, customEffect, blockTransforms[b]);
             }
         }
 

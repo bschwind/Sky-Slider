@@ -55,14 +55,16 @@ struct VS_OUTPUT
     float3 viewDirection    : TEXCOORD2;
 	float3 worldSpacePos      : TEXCOORD3;
 	float3 normal             : TEXCOORD4;
+	float3x3 world            : TEXCOORD5;
 };
 
-VS_OUTPUT VertexShaderFunction( VS_INPUT input )
+// Vertex shader helper function shared between the two techniques.
+VS_OUTPUT VertexShaderCommon(VS_INPUT input, float4x4 instanceTransform)
 {
     VS_OUTPUT output;
     
     // transform the position into projection space
-    float4 worldSpacePos = mul(input.position, World);
+    float4 worldSpacePos = mul(input.position, instanceTransform);
 	output.worldSpacePos = worldSpacePos;
     output.position = mul(worldSpacePos, View);
     output.position = mul(output.position, Projection);
@@ -80,8 +82,20 @@ VS_OUTPUT VertexShaderFunction( VS_INPUT input )
 
     // pass the texture coordinate through without additional processing
     output.texCoord = input.texCoord;
+
+	output.world = instanceTransform;
     
     return output;
+}
+
+VS_OUTPUT VertexShaderFunction( VS_INPUT input )
+{
+	return VertexShaderCommon(input, World);
+}
+
+VS_OUTPUT InstancingVertexShaderFunction(VS_INPUT input, float4x4 instanceTransform : BLENDWEIGHT)
+{
+	return VertexShaderCommon(input, transpose(instanceTransform));
 }
 
 float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
@@ -103,9 +117,9 @@ float4 PixelShaderFunction( VS_OUTPUT input ) : COLOR0
 {  
 	float3x3 tangentFrame = compute_tangent_frame(input.normal, input.worldSpacePos, input.texCoord);
 	float3x3 tangentToWorld;
-	tangentToWorld[0] = mul(tangentFrame[0], World);
-	tangentToWorld[1] = mul(tangentFrame[1], World);
-	tangentToWorld[2] = mul(tangentFrame[2], World);
+	tangentToWorld[0] = mul(tangentFrame[0], input.world);
+	tangentToWorld[1] = mul(tangentFrame[1], input.world);
+	tangentToWorld[2] = mul(tangentFrame[2], input.world);
 	
 	float3 normalFromMap = normalize(mul(2.0f * tex2D(NormalMapSampler, input.texCoord) - 1.0f, tangentToWorld));
 	normalFromMap = normalize(normalFromMap);
@@ -139,4 +153,13 @@ Technique NormalMapping
         VertexShader = compile vs_3_0 VertexShaderFunction();
         PixelShader = compile ps_3_0 PixelShaderFunction();
     }
+}
+
+Technique NormalMappingInstancing
+{
+	Pass Go
+	{
+		VertexShader = compile vs_3_0 InstancingVertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction();
+	}
 }

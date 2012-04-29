@@ -32,7 +32,7 @@ namespace SkySlider.Panels
         {
             base.LoadContent(content);
 
-            map = new Map("startPosTest.txt");
+            map = new Map(Device, "startPosTest.txt");
     //        map = new Map();
             BlockData.Initialize(Device, content);
             primBatch = new PrimitiveBatch(Device);

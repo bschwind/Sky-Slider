@@ -173,7 +173,8 @@ namespace SkySlider.Panels
 
             BlockData.Initialize(Device, content);
 
-            map = new Map("Content/Levels/ramps.txt"); //Load map
+            //map = new Map(Device, "Content/Levels/ramps.txt"); //Load map
+            map = new Map(Device);
 
             MeshBuilder mb = new MeshBuilder(Device);
 
@@ -188,7 +189,7 @@ namespace SkySlider.Panels
 
             partition = new MapPartition(map);
 
-            player = new Player(new Vector3(5,5,5)); //spawn player
+            player = new Player(new Vector3(map.Width/2,115,map.Depth - 2)); //spawn player
 
             initializePhysicsEngine();
 
@@ -351,12 +352,14 @@ namespace SkySlider.Panels
             base.Draw(g);
 
             normalMapEffect.Parameters["LightPosition"].SetValue(player.Body.Pos);
+            normalMapEffect.CurrentTechnique = normalMapEffect.Techniques["NormalMapping"];
 
             drawPhysicsSpheres();
             drawRemotePlayers();
             drawObjective();
             drawWalls();
             drawDirectionArrow();
+            normalMapEffect.CurrentTechnique = normalMapEffect.Techniques["NormalMappingInstancing"];
             drawMap(g);
             drawHUD();
         }
@@ -384,7 +387,8 @@ namespace SkySlider.Panels
 
         private void drawMap(GameTime g)
         {
-            map.DebugDraw(g, primBatch, player.Cam, normalMapEffect);
+            //map.DebugDraw(g, primBatch, player.Cam, normalMapEffect);
+            map.DrawInstanced(g, primBatch, player.Cam, normalMapEffect);
         }
 
         private void drawDirectionArrow()
@@ -438,6 +442,14 @@ namespace SkySlider.Panels
                 SphereBody sb = engine.GetBodies()[i] as SphereBody;
                 if (sb != null)
                 {
+                    if (sb.InContact)
+                    {
+                        playerColor = Color.Red.ToVector3();
+                    }
+                    else
+                    {
+                        playerColor = Color.Blue.ToVector3();
+                    }
                     primBatch.DrawMesh(sphere, Matrix.CreateScale(sb.Radius) * Matrix.CreateTranslation(engine.GetBodies()[i].Pos), player.Cam, playerColor);
                 }
             }

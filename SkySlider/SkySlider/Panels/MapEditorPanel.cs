@@ -60,7 +60,7 @@ namespace SkySlider.Panels
             cam.Pos = new Vector3(3, 3, 13);
 
 
-            map = new Map();
+            map = new Map(Device);
 
             partition = new MapPartition(map);
             engine = new PhysicsEngine3D(partition);

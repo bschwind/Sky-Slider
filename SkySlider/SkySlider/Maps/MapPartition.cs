@@ -69,16 +69,39 @@ namespace SkySlider.Maps
 
                             Contact3D contact = blockBody.GenerateContact(bodies[i], dt);
                             contact.Normal = Vector3.TransformNormal(contact.Normal, transform);
+
                             contact.pointA = Vector3.Transform(contact.pointA, transform);
                             contact.pointB = Vector3.Transform(contact.pointB, transform);
 
-                            contacts.Add(contact);
-
                             bodies[i].Pos = Vector3.Transform(bodies[i].Pos, transform);
+
+                            contacts.Add(contact);
                         }
                     }
                 }
             }
+        }
+
+        //Returns the squared distance between point c and segment ab
+        private float sqDistPointSegment(Vector3 a, Vector3 b, Vector3 c)
+        {
+            Vector3 ab = b - a;
+            Vector3 ac = c - a;
+            Vector3 bc = c - b;
+            float e = Vector3.Dot(ac, ab);
+
+            if (e <= 0.0f)
+            {
+                return Vector3.Dot(ac, ac);
+            }
+
+            float f = Vector3.Dot(ab, ab);
+            if (e >= f)
+            {
+                return Vector3.Dot(bc, bc);
+            }
+
+            return Vector3.Dot(ac, ac) - e * e / f;
         }
     }
 }
