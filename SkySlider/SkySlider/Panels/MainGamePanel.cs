@@ -174,7 +174,7 @@ namespace SkySlider.Panels
             BlockData.Initialize(Device, content);
 
             //map = new Map(Device, "Content/Levels/ramps.txt"); //Load map
-            map = new Map(Device);
+            map = new Map(Device, "Content/Levels/Level1-1.txt");
 
             MeshBuilder mb = new MeshBuilder(Device);
 
@@ -236,7 +236,7 @@ namespace SkySlider.Panels
             mb.AddQuad(new Vector3(1, 1, 1), new Vector3(map.Width - 1, 1, 1), new Vector3(map.Width - 1, 1, map.Depth - 1), new Vector3(1, 1, map.Depth - 1), false, Vector2.Zero, new Vector2(map.Width, map.Depth));
             walls = mb.End();
             walls.Texture = content.Load<Texture2D>("Textures/BlockTextures/Walls");
-            walls.NormalMap = content.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            walls.NormalMap = content.Load<Texture2D>("Textures/BlockTextures/WallsN");
         }
 
         private void initializePhysicsEngine()
