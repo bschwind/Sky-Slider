@@ -189,7 +189,7 @@ namespace SkySlider.Panels
 
             partition = new MapPartition(map);
 
-            player = new Player(new Vector3(map.Width/2,115,map.Depth - 2)); //spawn player
+            player = new Player(new Vector3(map.Width/2,20,map.Depth - 2)); //spawn player
 
             initializePhysicsEngine();
 
@@ -210,8 +210,8 @@ namespace SkySlider.Panels
             //Set up the normal mapping effect
             Vector4 lightColor = new Vector4(1, 1, 1, 1);
             Vector4 ambientLightColor = new Vector4(.2f, .2f, .2f, 1);
-            float shininess = 5f;
-            float specularPower = 120.0f;
+            float shininess = 0.5f;
+            float specularPower = 5.0f;
 
             normalMapEffect = content.Load<Effect>("Effects/NormalMap");
             normalMapEffect.Parameters["LightColor"].SetValue(lightColor);

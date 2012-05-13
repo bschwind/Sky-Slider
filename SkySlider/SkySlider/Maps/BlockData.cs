@@ -338,7 +338,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block5");
-            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block5N");
 
             return m;
         }
@@ -367,7 +367,7 @@ namespace SkySlider.Maps
             
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block6");
-            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block6N");
 
             return m;
         }
@@ -396,7 +396,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block7");
-            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block7N");
 
             return m;
         }
@@ -468,7 +468,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block9");
-            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block9N");
 
             return m;
         }
@@ -499,7 +499,7 @@ namespace SkySlider.Maps
 
             Mesh m = mb.End();
             m.Texture = c.Load<Texture2D>("Textures/BlockTextures/Block10");
-            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block1N");
+            m.NormalMap = c.Load<Texture2D>("Textures/BlockTextures/Block10N");
 
             return m;
         }
